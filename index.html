@@ -17,56 +17,92 @@
           <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
         </div>
         
-        <!-- Energy Flow Animation Widget -->
-        <div class="energy-flow-container">
-          <h3 class="flow-title">⚡ การไหลของพลังงาน (ขณะนี้)</h3>
-          <div class="flow-widget">
-            <!-- SVG Flow Line -->
-            <svg class="flow-svg" viewBox="0 0 320 160">
-              <defs>
-                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
-              <path class="flow-path-bg" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
-              <path id="flowPath" class="flow-path-active" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
-              <polygon points="208,50 216,55 208,60" fill="var(--accent-blue)" />
-            </svg>
-            
-            <!-- Grid Box (Bottom Left) -->
-            <div class="flow-box grid-box">
-              <div class="flow-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M 12 2 L 12 22" />
-                  <path d="M 5 12 L 19 12" />
-                  <path d="M 3 20 L 21 20" />
-                  <path d="M 7 5 L 12 2" />
-                  <path d="M 17 5 L 12 2" />
-                  <path d="M 7 5 L 17 5" />
-                  <path d="M 6 12 L 12 5" />
-                  <path d="M 18 12 L 12 5" />
-                  <path d="M 5 20 L 12 12" />
-                  <path d="M 19 20 L 12 12" />
-                </svg>
+        <!-- Right side widgets panel -->
+        <div class="hero-right-panel">
+          <!-- Energy Flow Animation Widget -->
+          <div class="energy-flow-container">
+            <h3 class="flow-title">⚡ การไหลของพลังงาน (ขณะนี้)</h3>
+            <div class="flow-widget">
+              <!-- SVG Flow Line -->
+              <svg class="flow-svg" viewBox="0 0 320 160">
+                <defs>
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
+                <path class="flow-path-bg" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
+                <path id="flowPath" class="flow-path-active" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
+                <polygon points="208,50 216,55 208,60" fill="var(--accent-blue)" />
+              </svg>
+              
+              <!-- Grid Box (Bottom Left) -->
+              <div class="flow-box grid-box">
+                <div class="flow-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M 12 2 L 12 22" />
+                    <path d="M 5 12 L 19 12" />
+                    <path d="M 3 20 L 21 20" />
+                    <path d="M 7 5 L 12 2" />
+                    <path d="M 17 5 L 12 2" />
+                    <path d="M 7 5 L 17 5" />
+                    <path d="M 6 12 L 12 5" />
+                    <path d="M 18 12 L 12 5" />
+                    <path d="M 5 20 L 12 12" />
+                    <path d="M 19 20 L 12 12" />
+                  </svg>
+                </div>
+                <div class="flow-details">
+                  <span class="flow-label">การไฟฟ้า</span>
+                  <span class="flow-value"><span id="gridPowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+                </div>
               </div>
-              <div class="flow-details">
-                <span class="flow-label">การไฟฟ้า</span>
-                <span class="flow-value"><span id="gridPowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+              
+              <!-- House Circle (Top Right) -->
+              <div class="flow-box house-circle-container">
+                <div class="house-circle">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                    <polyline points="9 22 9 12 15 12 15 22" />
+                  </svg>
+                </div>
+                <div class="flow-details house-details">
+                  <span class="flow-label">กำลังใช้ไฟฟ้า</span>
+                  <span class="flow-value"><span id="housePowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+                </div>
               </div>
             </div>
-            
-            <!-- House Circle (Top Right) -->
-            <div class="flow-box house-circle-container">
-              <div class="house-circle">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                  <polyline points="9 22 9 12 15 12 15 22" />
+          </div>
+          
+          <!-- Saving Card (Electricity Cost Savings) -->
+          <div class="card saving-card hero-saving-card">
+            <div class="saving-card-content">
+              <div class="piggy-icon-container">
+                <svg viewBox="0 0 24 24" class="piggy-svg" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 5c-1.5 0-2.8 1.1-3 2.5a6 6 0 0 0-8 0C7.8 6.1 6.5 5 5 5a4 4 0 0 0-4 4c0 2.5 1.5 4.5 3.5 5.3A4.5 4.5 0 0 0 8.5 19h7a4.5 4.5 0 0 0 4-4.7c2-.8 3.5-2.8 3.5-5.3a4 4 0 0 0-4-4Z" />
+                  <path d="M16 4.5 14 7" />
+                  <circle cx="9" cy="10" r="1" fill="currentColor" />
+                  <path d="M11 6h2" />
+                  <path d="M9 19v2M15 19v2" />
                 </svg>
               </div>
-              <div class="flow-details house-details">
-                <span class="flow-label">กำลังใช้ไฟฟ้า</span>
-                <span class="flow-value"><span id="housePowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+              <div class="saving-details">
+                <div class="saving-header">
+                  <span class="saving-title">ประหยัดค่าไฟ</span>
+                  <span class="info-icon-btn" onclick="alert('คำนวณจากการประหยัดพลังงานเมื่อเทียบกับค่าไฟเฉลี่ยสะสมเมื่อวาน (คิดที่หน่วยละ 4.2 บาท)')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10" />
+                      <path d="M12 16v-4M12 8h.01" />
+                    </svg>
+                  </span>
+                </div>
+                <div class="saving-value-wrapper">
+                  <span class="saving-value" id="savingsValue">0</span>
+                  <span class="saving-unit">บาท</span>
+                </div>
+                <div class="saving-subtext" id="savingsSubtext">
+                  กำลังคำนวณ...
+                </div>
               </div>
             </div>
           </div>
@@ -121,6 +157,8 @@
           <span class="text-sm" style="color: var(--accent-orange);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
         </div>
       </div>
+
+
 
       <div class="card">
         <div class="card-header"><h3 class="card-title">This Month</h3></div>
@@ -292,6 +330,49 @@
       detailedChartInstance.update();
     }
 
+    let yesterdayEnergy = 0;
+    function loadYesterdayEnergy() {
+      fetch(`${WEB_APP_URL}?action=getHistoricalData&range=yesterday`)
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.energies && data.energies.length > 0) {
+            yesterdayEnergy = data.energies.reduce((sum, e) => sum + e, 0);
+          } else {
+            yesterdayEnergy = 0;
+          }
+          updateSavingsDisplay();
+        })
+        .catch(err => {
+          console.error("Error loading yesterday energy:", err);
+          updateSavingsDisplay();
+        });
+    }
+
+    function updateSavingsDisplay() {
+      const todayEnergy = parseFloat(document.getElementById('todayEnergy').innerText) || 0;
+      const baseYesterday = yesterdayEnergy > 0 ? yesterdayEnergy : 12.5; // Fallback baseline: 12.5 kWh
+      const energySaved = baseYesterday - todayEnergy;
+      let savingsBaht = 0;
+      let savingsPercent = 0;
+      
+      const savingsValEl = document.getElementById('savingsValue');
+      const savingsSubtextEl = document.getElementById('savingsSubtext');
+      
+      if (!savingsValEl || !savingsSubtextEl) return;
+      
+      if (energySaved > 0) {
+        savingsBaht = energySaved * 4.2;
+        savingsPercent = (energySaved / baseYesterday) * 100;
+        savingsValEl.innerText = Math.round(savingsBaht);
+        savingsSubtextEl.innerHTML = `<span class="saving-up">▲ ${savingsPercent.toFixed(0)}%</span> จากเมื่อวาน`;
+      } else {
+        savingsBaht = 0;
+        const increasePercent = (Math.abs(energySaved) / baseYesterday) * 100;
+        savingsValEl.innerText = "0";
+        savingsSubtextEl.innerHTML = `<span class="saving-down">▼ ${increasePercent.toFixed(0)}%</span> จากเมื่อวาน`;
+      }
+    }
+
     function updateDashboard() {
       fetch(`${WEB_APP_URL}?action=getLatestData`)
         .then(res => res.json())
@@ -307,6 +388,7 @@
           document.getElementById('current').innerText = data.current;
           document.getElementById('pf').innerText = data.pf;
           document.getElementById('todayEnergy').innerText = data.todayEnergy;
+          updateSavingsDisplay();
           document.getElementById('todayCost').innerText = data.todayCost;
           document.getElementById('maxPowerToday').innerText = maxPowerTodayKw;
           document.getElementById('thisMonthEnergy').innerText = data.thisMonthEnergy;
@@ -366,6 +448,7 @@
     }
 
     updateDashboard();
+    loadYesterdayEnergy();
     setInterval(updateDashboard, 10000); 
   </script>
 </body>
