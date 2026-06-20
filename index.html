@@ -12,78 +12,137 @@
 <body>
 
   <div class="dashboard">
-    <div class="top-section">
-      <div class="hero-card">
-        <div class="hero-content">
-          <h1 class="hero-title">Smart Energy <br>Overview</h1>
-          <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
-        </div>
-        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
+    <header class="app-header">
+      <div class="brand-block">
+        <span class="eyebrow">SMART METER</span>
+        <h1>Energy Dashboard</h1>
+        <p id="period">กำลังโหลดรอบบิล...</p>
       </div>
+      <div class="header-status">
+        <span class="live-dot"></span>
+        <span>Live monitor</span>
+        <a id="otaBtn" href="#" target="_blank" class="ota-link">OTA Update</a>
+      </div>
+    </header>
 
-      <div class="side-panel">
-        <div class="info-card">
-          <div class="flex-between"><h3 class="card-title">Total Energy (สะสม)</h3></div>
-          <div class="value"><span id="totalEnergy">0.00</span> <span class="unit">kWh</span></div>
-          <p class="text-sm">หน่วยไฟสะสมในเครื่องทั้งหมด</p>
-          <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
-        </div>
-        
-        <div class="info-card clickable-card">
-          <div class="flex-between" style="margin-bottom: 15px;" onclick="openModal('system')">
-            <h3 class="card-title">สถานะระบบ (System)</h3>
+    <main class="dashboard-grid">
+      <section class="card power-panel clickable-card" onclick="openModal('power')">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">CURRENT LOAD</span>
+            <h2>กำลังไฟปัจจุบัน</h2>
           </div>
-          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">แรงดันไฟ (Voltage)</span><span style="font-weight: 600;"><span id="voltage">0</span> V</span></div>
-          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">กระแสไฟ (Current)</span><span style="font-weight: 600;"><span id="current">0</span> A</span></div>
-          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">Power Factor</span><span style="font-weight: 600;" id="pf">0</span></div>
-          
-          <div style="margin-top: 15px;">
-            <a id="otaBtn" href="#" target="_blank" style="display: none; background-color: var(--text-main); color: #fff; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: background 0.2s;">
-              🔄 อัปเดตโค้ดไร้สาย (OTA)
-            </a>
+          <span class="action-chip">ดูกราฟ</span>
+        </div>
+        <div class="power-readout">
+          <span id="power">0</span>
+          <small>Watt</small>
+        </div>
+        <div class="chart-container power-bars"><canvas id="powerBarChart"></canvas></div>
+        <div class="update-row">
+          <span>อัปเดตล่าสุด</span>
+          <strong id="last-update">กำลังโหลด...</strong>
+        </div>
+      </section>
+
+      <section class="card system-panel clickable-card" onclick="openModal('system')">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">SYSTEM</span>
+            <h2>สถานะระบบไฟฟ้า</h2>
+          </div>
+          <span class="action-chip">ตรวจสอบ</span>
+        </div>
+        <div class="system-list">
+          <div class="system-row">
+            <span>Voltage</span>
+            <strong><span id="voltage">0</span> V</strong>
+          </div>
+          <div class="system-row">
+            <span>Current</span>
+            <strong><span id="current">0</span> A</strong>
+          </div>
+          <div class="system-row">
+            <span>Power Factor</span>
+            <strong id="pf">0</strong>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <div class="bottom-grid">
-      <div class="card clickable-card" onclick="openModal('power')">
-        <div class="card-header"><h3 class="card-title">Current Power</h3></div>
-        <div class="stat-row">
-          <div class="stat-box"><div class="value" id="power">0</div><div class="unit">Watt (ปัจจุบัน)</div></div>
+      <section class="card energy-panel clickable-card" onclick="openModal('energy')">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">TODAY</span>
+            <h2>พลังงานวันนี้</h2>
+          </div>
+          <span class="action-chip">ย้อนหลัง</span>
         </div>
-        <div class="chart-container"><canvas id="powerBarChart"></canvas></div>
-      </div>
-
-      <div class="card clickable-card" onclick="openModal('energy')">
-        <div class="card-header"><h3 class="card-title">Energy Today</h3></div>
         <div class="gauge-container">
           <canvas id="todayGauge"></canvas>
-          <div style="position: absolute; bottom: 10px; text-align: center;">
-            <div class="value" id="todayEnergy" style="font-size: 1.5rem;">0</div><div class="unit">kWh</div>
+          <div class="gauge-value">
+            <strong id="todayEnergy">0</strong>
+            <span>kWh</span>
           </div>
         </div>
-        <div class="flex-between" style="margin-top: 15px;">
-          <span class="text-sm">Peak: <b id="maxPowerToday">0</b> W</span>
-          <span class="text-sm" style="color: var(--accent-orange);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
+        <div class="split-metrics">
+          <div>
+            <span>Peak</span>
+            <strong><span id="maxPowerToday">0</span> W</strong>
+          </div>
+          <div>
+            <span>ค่าไฟวันนี้</span>
+            <strong><span id="todayCost">0</span> ฿</strong>
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="card">
-        <div class="card-header"><h3 class="card-title">This Month</h3></div>
-        <div class="stat-box" style="margin-bottom: 20px;"><div class="value" id="thisMonthEnergy" style="font-size: 2.2rem;">0</div><div class="unit">kWh (หน่วยเดือนนี้)</div></div>
-        <div class="info-card" style="padding: 15px; box-shadow: none; border: 1px solid #e5e7eb;">
-          <div class="flex-between" style="margin-bottom: 5px;"><span class="text-sm">ค่าไฟประมาณการ</span><span style="font-weight: 700; color: #10b981;"><span id="thisMonthCost">0</span> ฿</span></div>
-          <div class="flex-between" style="margin: 0;"><span class="text-sm">Peak เดือนนี้</span><span style="font-weight: 700;"><span id="maxPowerMonth">0</span> W</span></div>
+      <section class="card month-panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">BILLING CYCLE</span>
+            <h2>สรุปเดือนนี้</h2>
+          </div>
         </div>
-      </div>
+        <div class="month-value">
+          <strong id="thisMonthEnergy">0</strong>
+          <span>kWh</span>
+        </div>
+        <div class="summary-list">
+          <div>
+            <span>ค่าไฟประมาณการ</span>
+            <strong><span id="thisMonthCost">0</span> ฿</strong>
+          </div>
+          <div>
+            <span>Peak เดือนนี้</span>
+            <strong><span id="maxPowerMonth">0</span> W</strong>
+          </div>
+        </div>
+      </section>
 
-      <div class="card">
-        <div class="card-header"><h3 class="card-title">Power Trend</h3></div>
-        <div class="stat-box" style="margin-bottom: 10px;"><div class="unit">อัปเดต: <span id="last-update">กำลังโหลด...</span></div></div>
-        <div class="chart-container" style="height: 120px;"><canvas id="trendLineChart"></canvas></div>
-      </div>
-    </div>
+      <section class="card total-panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">LIFETIME</span>
+            <h2>พลังงานสะสม</h2>
+          </div>
+        </div>
+        <div class="total-value">
+          <strong id="totalEnergy">0.00</strong>
+          <span>kWh</span>
+        </div>
+        <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
+      </section>
+
+      <section class="card trend-panel">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">TREND</span>
+            <h2>แนวโน้มการใช้ไฟ</h2>
+          </div>
+        </div>
+        <div class="chart-container trend-chart"><canvas id="trendLineChart"></canvas></div>
+      </section>
+    </main>
   </div>
 
   <div id="graphModal" class="modal-overlay" onclick="closeModalOutside(event)">
@@ -100,8 +159,8 @@
             <option value="today">วันนี้ (Today)</option>
             <option value="yesterday">เมื่อวาน (Yesterday)</option>
             <option value="7days">ย้อนหลัง 7 วัน (7 Days)</option>
-            <option value="specific_date">📅 เลือกวันที่ (รายวัน)...</option>
-            <option value="specific_month">📑 เลือกรอบบิล (รายเดือน)...</option>
+            <option value="specific_date">เลือกวันที่ (รายวัน)...</option>
+            <option value="specific_month">เลือกรอบบิล (รายเดือน)...</option>
           </select>
           <input type="date" id="datePicker" class="time-select" style="display: none;" onchange="loadGraphData()">
           <select id="monthPicker" class="time-select" style="display: none;" onchange="loadGraphData()">
@@ -156,9 +215,9 @@
     function openModal(type) {
       document.getElementById('graphModal').style.display = 'flex'; currentActiveModal = type;
       const titleEl = document.getElementById('modalTitle');
-      if (type === 'power') titleEl.innerText = "⚡ ประวัติกำลังไฟฟ้า";
-      else if (type === 'system') titleEl.innerText = "🔌 สถานะระบบไฟฟ้า";
-      else if (type === 'energy') titleEl.innerText = "🔋 ประวัติพลังงาน";
+      if (type === 'power') titleEl.innerText = "ประวัติกำลังไฟฟ้า";
+      else if (type === 'system') titleEl.innerText = "สถานะระบบไฟฟ้า";
+      else if (type === 'energy') titleEl.innerText = "ประวัติพลังงาน";
 
       const ctxDetail = document.getElementById('detailedChartCanvas').getContext('2d');
       if (detailedChartInstance) detailedChartInstance.destroy();
