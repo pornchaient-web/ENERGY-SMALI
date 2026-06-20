@@ -16,6 +16,61 @@
           <h1 class="hero-title">Here's Your <br>Energy Overview</h1>
           <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
         </div>
+        
+        <!-- Energy Flow Animation Widget -->
+        <div class="energy-flow-container">
+          <h3 class="flow-title">⚡ การไหลของพลังงาน (ขณะนี้)</h3>
+          <div class="flow-widget">
+            <!-- SVG Flow Line -->
+            <svg class="flow-svg" viewBox="0 0 320 160">
+              <defs>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+              <path class="flow-path-bg" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
+              <path id="flowPath" class="flow-path-active" d="M 95 115 L 155 115 Q 175 115 175 95 L 175 75 Q 175 55 195 55 L 210 55" />
+              <polygon points="208,50 216,55 208,60" fill="var(--accent-blue)" />
+            </svg>
+            
+            <!-- Grid Box (Bottom Left) -->
+            <div class="flow-box grid-box">
+              <div class="flow-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M 12 2 L 12 22" />
+                  <path d="M 5 12 L 19 12" />
+                  <path d="M 3 20 L 21 20" />
+                  <path d="M 7 5 L 12 2" />
+                  <path d="M 17 5 L 12 2" />
+                  <path d="M 7 5 L 17 5" />
+                  <path d="M 6 12 L 12 5" />
+                  <path d="M 18 12 L 12 5" />
+                  <path d="M 5 20 L 12 12" />
+                  <path d="M 19 20 L 12 12" />
+                </svg>
+              </div>
+              <div class="flow-details">
+                <span class="flow-label">การไฟฟ้า</span>
+                <span class="flow-value"><span id="gridPowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+              </div>
+            </div>
+            
+            <!-- House Circle (Top Right) -->
+            <div class="flow-box house-circle-container">
+              <div class="house-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                  <polyline points="9 22 9 12 15 12 15 22" />
+                </svg>
+              </div>
+              <div class="flow-details house-details">
+                <span class="flow-label">กำลังใช้ไฟฟ้า</span>
+                <span class="flow-value"><span id="housePowerValue">0.00</span> <span class="flow-unit">kW</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
         <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
       </div>
 
@@ -48,7 +103,7 @@
       <div class="card clickable-card" onclick="openModal('power')">
         <div class="card-header"><h3 class="card-title">Current Power</h3></div>
         <div class="stat-row">
-          <div class="stat-box"><div class="value" id="power">0</div><div class="unit">Watt (ปัจจุบัน)</div></div>
+          <div class="stat-box"><div class="value" id="power">0.00</div><div class="unit">kW (ปัจจุบัน)</div></div>
         </div>
         <div class="chart-container"><canvas id="powerBarChart"></canvas></div>
       </div>
@@ -62,7 +117,7 @@
           </div>
         </div>
         <div class="flex-between" style="margin-top: 15px;">
-          <span class="text-sm">Peak: <b id="maxPowerToday">0</b> W</span>
+          <span class="text-sm">Peak: <b id="maxPowerToday">0.00</b> kW</span>
           <span class="text-sm" style="color: var(--accent-orange);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
         </div>
       </div>
@@ -72,7 +127,7 @@
         <div class="stat-box" style="margin-bottom: 20px;"><div class="value" id="thisMonthEnergy" style="font-size: 2.2rem;">0</div><div class="unit">kWh (หน่วยเดือนนี้)</div></div>
         <div class="info-card" style="padding: 15px; box-shadow: none; border: 1px solid #e5e7eb;">
           <div class="flex-between" style="margin-bottom: 5px;"><span class="text-sm">ค่าไฟประมาณการ</span><span style="font-weight: 700; color: #10b981;"><span id="thisMonthCost">0</span> ฿</span></div>
-          <div class="flex-between" style="margin: 0;"><span class="text-sm">Peak เดือนนี้</span><span style="font-weight: 700;"><span id="maxPowerMonth">0</span> W</span></div>
+          <div class="flex-between" style="margin: 0;"><span class="text-sm">Peak เดือนนี้</span><span style="font-weight: 700;"><span id="maxPowerMonth">0.00</span> kW</span></div>
         </div>
       </div>
 
@@ -134,8 +189,8 @@
     function setupModalChartConfig(type) {
       let chartConfig = { type: 'line', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' } }, animation: { duration: 0 } } };
       if (type === 'power') {
-        chartConfig.data.datasets.push({ label: 'Power (Watt)', data: [], borderColor: '#ff5722', backgroundColor: 'rgba(255, 87, 34, 0.1)', fill: true, tension: 0.3, pointRadius: 2 });
-        chartConfig.options.scales = { y: { beginAtZero: true, title: { display: true, text: 'Watt' } } };
+        chartConfig.data.datasets.push({ label: 'Power (kW)', data: [], borderColor: '#ff5722', backgroundColor: 'rgba(255, 87, 34, 0.1)', fill: true, tension: 0.3, pointRadius: 2 });
+        chartConfig.options.scales = { y: { beginAtZero: true, title: { display: true, text: 'kW' } } };
       } else if (type === 'system') {
         chartConfig.data.datasets.push({ label: 'Voltage (V)', data: [], borderColor: '#38bdf8', backgroundColor: '#38bdf8', yAxisID: 'y', tension: 0.3, pointRadius: 2 });
         chartConfig.data.datasets.push({ label: 'Current (A)', data: [], borderColor: '#ffc107', backgroundColor: '#ffc107', yAxisID: 'y1', tension: 0.3, pointRadius: 2 });
@@ -223,7 +278,11 @@
     function updateChartData(times, powers, voltages, currents, energies) {
       if (!detailedChartInstance) return;
       detailedChartInstance.data.labels = times || [];
-      if (currentActiveModal === 'power' && detailedChartInstance.data.datasets[0]) detailedChartInstance.data.datasets[0].data = powers || [];
+      if (currentActiveModal === 'power' && detailedChartInstance.data.datasets[0]) {
+        const range = document.getElementById('timeRange').value;
+        const displayPowers = (range === 'realtime') ? (powers || []) : (powers || []).map(p => p / 1000);
+        detailedChartInstance.data.datasets[0].data = displayPowers;
+      }
       else if (currentActiveModal === 'system') {
         if (detailedChartInstance.data.datasets[0]) detailedChartInstance.data.datasets[0].data = voltages || [];
         if (detailedChartInstance.data.datasets[1]) detailedChartInstance.data.datasets[1].data = currents || [];
@@ -238,19 +297,42 @@
         .then(res => res.json())
         .then(data => {
           if (data.error) { document.getElementById('period').innerText = data.error; return; }
+          const powerKw = (parseFloat(data.power) / 1000).toFixed(2);
+          const maxPowerTodayKw = (parseFloat(data.maxPowerToday) / 1000).toFixed(2);
+          const maxPowerMonthKw = (parseFloat(data.maxPowerMonth) / 1000).toFixed(2);
+
           document.getElementById('period').innerText = "รอบบิล: " + data.sheetName;
-          document.getElementById('power').innerText = data.power;
+          document.getElementById('power').innerText = powerKw;
           document.getElementById('voltage').innerText = data.voltage;
           document.getElementById('current').innerText = data.current;
           document.getElementById('pf').innerText = data.pf;
           document.getElementById('todayEnergy').innerText = data.todayEnergy;
           document.getElementById('todayCost').innerText = data.todayCost;
-          document.getElementById('maxPowerToday').innerText = data.maxPowerToday;
+          document.getElementById('maxPowerToday').innerText = maxPowerTodayKw;
           document.getElementById('thisMonthEnergy').innerText = data.thisMonthEnergy;
           document.getElementById('thisMonthCost').innerText = data.thisMonthCost;
-          document.getElementById('maxPowerMonth').innerText = data.maxPowerMonth;
+          document.getElementById('maxPowerMonth').innerText = maxPowerMonthKw;
           document.getElementById('totalEnergy').innerText = data.totalEnergy;
           document.getElementById('last-update').innerText = data.time;
+
+          // Update energy flow values
+          document.getElementById('gridPowerValue').innerText = powerKw;
+          document.getElementById('housePowerValue').innerText = powerKw;
+
+          // Dynamic flow line animation speed
+          const flowPath = document.getElementById('flowPath');
+          if (flowPath) {
+            const powerVal = parseFloat(data.power) || 0;
+            if (powerVal < 10) {
+              flowPath.style.animationPlayState = 'paused';
+              flowPath.style.opacity = '0.3';
+            } else {
+              flowPath.style.animationPlayState = 'running';
+              flowPath.style.opacity = '1';
+              const duration = Math.max(0.4, Math.min(4.0, 4 - (powerVal / 1500)));
+              flowPath.style.animationDuration = duration + 's';
+            }
+          }
 
           // 🛡️ อัปเดตลิงก์ปุ่ม OTA อัตโนมัติจาก IP ล่าสุด
           const otaBtn = document.getElementById('otaBtn');
@@ -263,11 +345,12 @@
 
           let now = new Date();
           let timeString = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+          const powerValueKw = parseFloat(data.power) / 1000 || 0;
           historyTime.push(timeString);
-          historyPower.push(parseFloat(data.power) || 0); historyVoltage.push(parseFloat(data.voltage) || 0); historyCurrent.push(parseFloat(data.current) || 0); historyEnergy.push(parseFloat(data.todayEnergy) || 0);
+          historyPower.push(powerValueKw); historyVoltage.push(parseFloat(data.voltage) || 0); historyCurrent.push(parseFloat(data.current) || 0); historyEnergy.push(parseFloat(data.todayEnergy) || 0);
 
           if (historyTime.length > MAX_HISTORY) { historyTime.shift(); historyPower.shift(); historyVoltage.shift(); historyCurrent.shift(); historyEnergy.shift(); }
-          powerData.shift(); powerData.push(parseFloat(data.power));
+          powerData.shift(); powerData.push(powerValueKw);
           powerBarChart.update();
           trendLineChart.data.datasets[0].data = powerData; trendLineChart.update();
           
