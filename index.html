@@ -46,6 +46,7 @@
 
     <div class="bottom-grid">
       <div class="card clickable-card" onclick="openModal('power')">
+        <div class="card-header"><h3 class="card-title">Current Power</h3></div>
         <div class="stat-row">
           <div class="stat-box"><div class="value" id="power">0</div><div class="unit">Watt (ปัจจุบัน)</div></div>
         </div>
@@ -53,6 +54,7 @@
       </div>
 
       <div class="card clickable-card" onclick="openModal('energy')">
+        <div class="card-header"><h3 class="card-title">Energy Today</h3></div>
         <div class="gauge-container">
           <canvas id="todayGauge"></canvas>
           <div style="position: absolute; bottom: 10px; text-align: center;">
