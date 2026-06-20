@@ -3,246 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#0f172a">
-  <title>Smart Energy Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
-  <div class="app-shell">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-icon"><i data-lucide="zap"></i></div>
-        <div>
-          <strong>SMART HOME</strong>
-          <span>ENERGY</span>
+  <div class="dashboard">
+    <div class="top-section">
+      <div class="hero-card">
+        <div class="hero-content">
+          <h1 class="hero-title">Here's Your <br>Energy Overview</h1>
+          <p class="hero-subtitle" id="period">กำลังโหลดรอบบิล...</p>
         </div>
+        <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
       </div>
 
-      <nav class="nav-menu" aria-label="Dashboard navigation">
-        <a href="#" class="nav-item active"><i data-lucide="home"></i><span>ภาพรวม</span></a>
-        <a href="#" class="nav-item"><i data-lucide="area-chart"></i><span>การใช้ไฟฟ้า</span></a>
-        <a href="#" class="nav-item"><i data-lucide="cpu"></i><span>อุปกรณ์</span></a>
-        <a href="#" class="nav-item"><i data-lucide="solar-panel"></i><span>โซลาร์เซลล์</span></a>
-        <a href="#" class="nav-item"><i data-lucide="file-text"></i><span>รายงาน</span></a>
-        <a href="#" class="nav-item"><i data-lucide="bell"></i><span>การแจ้งเตือน</span></a>
-        <a href="#" class="nav-item"><i data-lucide="settings"></i><span>การตั้งค่า</span></a>
-      </nav>
-
-      <div class="home-card">
-        <div class="home-visual">
-          <i data-lucide="house"></i>
-        </div>
-        <strong>บ้านของฉัน</strong>
-        <span>สมาร์ทโฮม</span>
-        <div class="mini-meta">
-          <small>มิเตอร์ไฟฟ้า</small>
-          <b>123456789</b>
-        </div>
-        <div class="mini-meta">
-          <small>อัปเดตล่าสุด</small>
-          <b id="sidebarLastUpdate">กำลังโหลด...</b>
-        </div>
-      </div>
-    </aside>
-
-    <main class="main-content">
-      <header class="topbar">
-        <div>
-          <h1>SMART HOME ENERGY DASHBOARD</h1>
-          <p id="period">กำลังโหลดรอบบิล...</p>
-        </div>
-        <div class="top-actions">
-          <div class="date-pill"><i data-lucide="calendar-days"></i><span id="displayDate">วันนี้</span></div>
-          <button class="today-btn" type="button">วันนี้</button>
-          <button class="icon-btn" type="button" aria-label="ก่อนหน้า"><i data-lucide="chevron-left"></i></button>
-          <button class="icon-btn" type="button" aria-label="ถัดไป"><i data-lucide="chevron-right"></i></button>
-          <button class="bell-btn" type="button" aria-label="การแจ้งเตือน"><i data-lucide="bell"></i><span>3</span></button>
-          <a id="otaBtn" href="#" target="_blank" class="ota-link">OTA</a>
-        </div>
-      </header>
-
-      <section class="stat-grid">
-        <article class="stat-card">
-          <div class="stat-icon green"><i data-lucide="zap"></i></div>
-          <div>
-            <span>ใช้ไฟวันนี้</span>
-            <strong><span id="todayEnergy">0</span> <small>kWh</small></strong>
-            <p><i data-lucide="activity"></i> Peak <b id="maxPowerToday">0</b> W</p>
-          </div>
-          <i class="info-icon" data-lucide="info"></i>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-icon amber"><i data-lucide="badge-dollar-sign"></i></div>
-          <div>
-            <span>ค่าไฟวันนี้</span>
-            <strong><span id="todayCost">0</span> <small>บาท</small></strong>
-            <p><i data-lucide="calculator"></i> จากข้อมูลจริง</p>
-          </div>
-          <i class="info-icon" data-lucide="info"></i>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-icon blue"><i data-lucide="gauge"></i></div>
-          <div>
-            <span>กำลังไฟตอนนี้</span>
-            <strong><span id="power">0</span> <small>W</small></strong>
-            <p><i data-lucide="clock-3"></i> <b id="last-update">กำลังโหลด...</b></p>
-          </div>
-          <i class="info-icon" data-lucide="info"></i>
-        </article>
-
-        <article class="stat-card">
-          <div class="stat-icon green-soft"><i data-lucide="piggy-bank"></i></div>
-          <div>
-            <span>ค่าไฟรอบบิลนี้</span>
-            <strong><span id="thisMonthCost">0</span> <small>บาท</small></strong>
-            <p><i data-lucide="trending-up"></i> <b id="thisMonthEnergy">0</b> kWh</p>
-          </div>
-          <i class="info-icon" data-lucide="info"></i>
-        </article>
-      </section>
-
-      <section class="content-grid">
-        <article class="panel usage-panel clickable-card" onclick="openModal('power')">
-          <div class="panel-head">
-            <div>
-              <i data-lucide="chart-no-axes-combined"></i>
-              <h2>การใช้ไฟฟ้าวันนี้</h2>
-            </div>
-            <div class="segmented">
-              <button class="active" type="button">เรียลไทม์</button>
-              <button type="button">รายวัน</button>
-            </div>
-          </div>
-          <div class="chart-legend">
-            <span><b class="dot orange"></b>กำลังไฟจริง</span>
-            <span><b class="dot green"></b>ค่าเฉลี่ย</span>
-          </div>
-          <div class="chart-container usage-chart"><canvas id="powerBarChart"></canvas></div>
-        </article>
-
-        <article class="panel flow-panel">
-          <div class="panel-head">
-            <div>
-              <i data-lucide="zap"></i>
-              <h2>การไหลของพลังงาน (ขณะนี้)</h2>
-            </div>
-          </div>
-          <div class="flow-layout">
-            <div class="flow-sources">
-              <div class="source-card disabled">
-                <i data-lucide="sun"></i>
-                <div><span>โซลาร์เซลล์</span><strong id="flowSolar">ไม่เชื่อมต่อ</strong></div>
-              </div>
-              <div class="source-card disabled">
-                <i data-lucide="battery-charging"></i>
-                <div><span>แบตเตอรี่</span><strong id="flowBattery">ไม่เชื่อมต่อ</strong></div>
-              </div>
-              <div class="source-card">
-                <i data-lucide="utility-pole"></i>
-                <div><span>การไฟฟ้า</span><strong><span id="flowGridKw">0.00</span> kW</strong></div>
-              </div>
-            </div>
-            <div class="flow-home">
-              <div class="home-node"><i data-lucide="house"></i></div>
-              <span>กำลังใช้ไฟฟ้า</span>
-              <strong><span id="flowPowerKw">0.00</span> kW</strong>
-            </div>
-          </div>
-        </article>
-
-        <article class="panel donut-panel clickable-card" onclick="openModal('energy')">
-          <div class="panel-head">
-            <div>
-              <i data-lucide="pie-chart"></i>
-              <h2>พลังงานวันนี้</h2>
-            </div>
-          </div>
-          <div class="gauge-container">
-            <canvas id="todayGauge"></canvas>
-            <div class="gauge-value">
-              <strong id="todayGaugeValue">0</strong>
-              <span>kWh วันนี้</span>
-            </div>
-          </div>
-          <div class="mini-list">
-            <div><span>สะสมทั้งหมด</span><strong><span id="totalEnergy">0.00</span> kWh</strong></div>
-            <div><span>Peak เดือนนี้</span><strong><span id="maxPowerMonth">0</span> W</strong></div>
-          </div>
+      <div class="side-panel">
+        <div class="info-card">
+          <div class="flex-between"><h3 class="card-title">Total Energy (สะสม)</h3></div>
+          <div class="value"><span id="totalEnergy">0.00</span> <span class="unit">kWh</span></div>
+          <p class="text-sm">หน่วยไฟสะสมในเครื่องทั้งหมด</p>
           <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
-        </article>
+        </div>
+        
+        <div class="info-card clickable-card">
+          <div class="flex-between" style="margin-bottom: 15px;" onclick="openModal('system')">
+            <h3 class="card-title">สถานะระบบ (System)</h3>
+          </div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">แรงดันไฟ (Voltage)</span><span style="font-weight: 600;"><span id="voltage">0</span> V</span></div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">กระแสไฟ (Current)</span><span style="font-weight: 600;"><span id="current">0</span> A</span></div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">Power Factor</span><span style="font-weight: 600;" id="pf">0</span></div>
+          
+          <div style="margin-top: 15px;">
+            <a id="otaBtn" href="#" target="_blank" style="display: none; background-color: var(--text-main); color: #fff; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: background 0.2s;">
+              🔄 อัปเดตโค้ดไร้สาย (OTA)
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <article class="panel bill-panel">
-          <div class="panel-head">
-            <div>
-              <i data-lucide="bar-chart-3"></i>
-              <h2>แนวโน้มกำลังไฟ</h2>
-            </div>
-          </div>
-          <div class="chart-container trend-chart"><canvas id="trendLineChart"></canvas></div>
-          <div class="bill-summary">
-            <div>
-              <span>ค่าไฟเฉลี่ย/วัน</span>
-              <strong><span id="avgDailyCost">0</span> บาท</strong>
-            </div>
-            <div>
-              <span>คาดการณ์ทั้งเดือน</span>
-              <strong><span id="projectedCost">0</span> บาท</strong>
-            </div>
-          </div>
-        </article>
+    <div class="bottom-grid">
+      <div class="card clickable-card" onclick="openModal('power')">
+        <div class="card-header"><h3 class="card-title">Current Power</h3></div>
+        <div class="stat-row">
+          <div class="stat-box"><div class="value" id="power">0</div><div class="unit">Watt (ปัจจุบัน)</div></div>
+        </div>
+        <div class="chart-container"><canvas id="powerBarChart"></canvas></div>
+      </div>
 
-        <article class="panel status-panel clickable-card" onclick="openModal('system')">
-          <div class="panel-head">
-            <div>
-              <i data-lucide="server-cog"></i>
-              <h2>สถานะระบบ</h2>
-            </div>
+      <div class="card clickable-card" onclick="openModal('energy')">
+        <div class="card-header"><h3 class="card-title">Energy Today</h3></div>
+        <div class="gauge-container">
+          <canvas id="todayGauge"></canvas>
+          <div style="position: absolute; bottom: 10px; text-align: center;">
+            <div class="value" id="todayEnergy" style="font-size: 1.5rem;">0</div><div class="unit">kWh</div>
           </div>
-          <div class="status-list">
-            <div><span>แรงดันไฟ</span><strong><span id="voltage">0</span> V</strong><i data-lucide="check-circle-2"></i></div>
-            <div><span>กระแสไฟ</span><strong><span id="current">0</span> A</strong><i data-lucide="check-circle-2"></i></div>
-            <div><span>Power Factor</span><strong id="pf">0</strong><i data-lucide="check-circle-2"></i></div>
-            <div><span>สถานะมิเตอร์</span><strong id="meterStatus">กำลังอ่านค่า</strong><i data-lucide="radio"></i></div>
-          </div>
-        </article>
+        </div>
+        <div class="flex-between" style="margin-top: 15px;">
+          <span class="text-sm">Peak: <b id="maxPowerToday">0</b> W</span>
+          <span class="text-sm" style="color: var(--accent-orange);">ค่าไฟ: <b id="todayCost">0</b> ฿</span>
+        </div>
+      </div>
 
-        <article class="panel alert-panel">
-          <div class="panel-head">
-            <div>
-              <i data-lucide="bell-ring"></i>
-              <h2>การแจ้งเตือน</h2>
-            </div>
-            <a href="#">ทั้งหมด</a>
-          </div>
-          <div class="alert-list">
-            <div class="alert-item danger">
-              <i data-lucide="circle-alert"></i>
-              <div><strong id="powerAlertTitle">กำลังตรวจสอบโหลด</strong><span id="powerAlertText">รอข้อมูลล่าสุด...</span></div>
-            </div>
-            <div class="alert-item warning">
-              <i data-lucide="triangle-alert"></i>
-              <div><strong>ค่าไฟรอบบิล</strong><span><span id="billAlertCost">0</span> บาท จากข้อมูลจริง</span></div>
-            </div>
-            <div class="alert-item info">
-              <i data-lucide="info"></i>
-              <div><strong>อัปเดตระบบ</strong><span id="alertLastUpdate">กำลังโหลด...</span></div>
-            </div>
-          </div>
-        </article>
-      </section>
+      <div class="card">
+        <div class="card-header"><h3 class="card-title">This Month</h3></div>
+        <div class="stat-box" style="margin-bottom: 20px;"><div class="value" id="thisMonthEnergy" style="font-size: 2.2rem;">0</div><div class="unit">kWh (หน่วยเดือนนี้)</div></div>
+        <div class="info-card" style="padding: 15px; box-shadow: none; border: 1px solid #e5e7eb;">
+          <div class="flex-between" style="margin-bottom: 5px;"><span class="text-sm">ค่าไฟประมาณการ</span><span style="font-weight: 700; color: #10b981;"><span id="thisMonthCost">0</span> ฿</span></div>
+          <div class="flex-between" style="margin: 0;"><span class="text-sm">Peak เดือนนี้</span><span style="font-weight: 700;"><span id="maxPowerMonth">0</span> W</span></div>
+        </div>
+      </div>
 
-      <section class="tip-strip">
-        <i data-lucide="leaf"></i>
-        <strong>เคล็ดลับการประหยัดพลังงาน</strong>
-        <span>ตรวจดูช่วงที่กำลังไฟสูง แล้วเลื่อนการใช้อุปกรณ์กินไฟไปคนละช่วงเวลาเพื่อลด peak load</span>
-      </section>
-    </main>
+      <div class="card">
+        <div class="card-header"><h3 class="card-title">Power Trend</h3></div>
+        <div class="stat-box" style="margin-bottom: 10px;"><div class="unit">อัปเดต: <span id="last-update">กำลังโหลด...</span></div></div>
+        <div class="chart-container" style="height: 120px;"><canvas id="trendLineChart"></canvas></div>
+      </div>
+    </div>
   </div>
 
   <div id="graphModal" class="modal-overlay" onclick="closeModalOutside(event)">
@@ -259,8 +98,8 @@
             <option value="today">วันนี้ (Today)</option>
             <option value="yesterday">เมื่อวาน (Yesterday)</option>
             <option value="7days">ย้อนหลัง 7 วัน (7 Days)</option>
-            <option value="specific_date">เลือกวันที่ (รายวัน)...</option>
-            <option value="specific_month">เลือกรอบบิล (รายเดือน)...</option>
+            <option value="specific_date">📅 เลือกวันที่ (รายวัน)...</option>
+            <option value="specific_month">📑 เลือกรอบบิล (รายเดือน)...</option>
           </select>
           <input type="date" id="datePicker" class="time-select" style="display: none;" onchange="loadGraphData()">
           <select id="monthPicker" class="time-select" style="display: none;" onchange="loadGraphData()">
@@ -277,104 +116,33 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec";
 
     Chart.defaults.font.family = "'Chakra Petch', sans-serif";
-    Chart.defaults.color = '#667085';
-    Chart.defaults.borderColor = 'rgba(203, 213, 225, 0.65)';
-    if (window.lucide) lucide.createIcons();
+    Chart.defaults.color = '#6b7280';
     
     const MAX_HISTORY = 60;
     let historyTime = []; let historyPower = []; let historyVoltage = []; let historyCurrent = []; let historyEnergy = []; 
 
-    function setText(id, value) {
-      const el = document.getElementById(id);
-      if (el) el.innerText = value;
-    }
-
-    function toNumber(value) {
-      const num = parseFloat(value);
-      return Number.isFinite(num) ? num : 0;
-    }
-
-    function toKw(watt) {
-      return (toNumber(watt) / 1000).toFixed(2);
-    }
-
-    function getBillingElapsedDays() {
-      const now = new Date();
-      const start = new Date(now.getFullYear(), now.getMonth(), 25);
-      if (now.getDate() < 25) start.setMonth(start.getMonth() - 1);
-      const elapsed = Math.floor((now - start) / 86400000) + 1;
-      return Math.max(1, elapsed);
-    }
-
-    function getRecentLabels(count) {
-      const labels = historyTime.slice(-count);
-      while (labels.length < count) labels.unshift('');
-      return labels;
-    }
-
-    function getAverageLine(values) {
-      const realValues = values.filter(v => v > 0);
-      const avg = realValues.length ? realValues.reduce((sum, value) => sum + value, 0) / realValues.length : 0;
-      return values.map(() => Number(avg.toFixed(1)));
-    }
-
-    setText('displayDate', new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' }));
-
-    function updateDerivedUI(data) {
-      const power = toNumber(data.power);
-      const monthCost = toNumber(data.thisMonthCost);
-      const elapsedDays = getBillingElapsedDays();
-      const avgDailyCost = monthCost / elapsedDays;
-      const projectedCost = avgDailyCost * 30;
-      const latestTime = data.time || 'กำลังโหลด...';
-
-      setText('todayGaugeValue', data.todayEnergy || '0');
-      setText('flowPowerKw', toKw(power));
-      setText('flowGridKw', toKw(power));
-      setText('avgDailyCost', avgDailyCost.toFixed(0));
-      setText('projectedCost', projectedCost.toFixed(0));
-      setText('sidebarLastUpdate', latestTime);
-      setText('alertLastUpdate', latestTime);
-      setText('billAlertCost', data.thisMonthCost || '0');
-      setText('meterStatus', 'ออนไลน์');
-
-      if (power >= 3000) {
-        setText('powerAlertTitle', 'โหลดไฟฟ้าสูง');
-        setText('powerAlertText', 'กำลังใช้ไฟเกิน 3,000 W ในขณะนี้');
-      } else if (power >= 1500) {
-        setText('powerAlertTitle', 'กำลังใช้ไฟระดับกลาง');
-        setText('powerAlertText', 'ตรวจสอบอุปกรณ์ที่เปิดพร้อมกัน');
-      } else {
-        setText('powerAlertTitle', 'โหลดไฟฟ้าปกติ');
-        setText('powerAlertText', 'ค่ากำลังไฟอยู่ในระดับปกติ');
-      }
-    }
-
     const ctxBar = document.getElementById('powerBarChart').getContext('2d');
-    const powerBarGradient = ctxBar.createLinearGradient(0, 0, 0, 260);
-    powerBarGradient.addColorStop(0, 'rgba(245, 158, 11, 0.28)');
-    powerBarGradient.addColorStop(1, 'rgba(245, 158, 11, 0.02)');
     let powerData = Array(15).fill(0);
-    const powerBarChart = new Chart(ctxBar, { type: 'line', data: { labels: Array(15).fill(''), datasets: [{ label: 'กำลังไฟจริง (W)', data: powerData, borderColor: '#f59e0b', backgroundColor: powerBarGradient, borderWidth: 2.5, fill: true, tension: 0.38, pointRadius: 2, pointHoverRadius: 5 }, { label: 'ค่าเฉลี่ย (W)', data: Array(15).fill(0), borderColor: '#18a85b', backgroundColor: 'rgba(24, 168, 91, 0.08)', borderWidth: 2, fill: false, tension: 0.38, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { x: { grid: { display: false } }, y: { beginAtZero: true, ticks: { callback: value => value + ' W' }, grid: { color: 'rgba(203, 213, 225, 0.6)' } } }, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8 } } } });
+    const powerBarChart = new Chart(ctxBar, { type: 'bar', data: { labels: Array(15).fill(''), datasets: [{ data: powerData, backgroundColor: '#ff5722', borderRadius: 4, barPercentage: 0.6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false, min: 0 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     const ctxGauge = document.getElementById('todayGauge').getContext('2d');
-    const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#18a85b', '#2563eb', '#edf2f7'], borderWidth: 0, cutout: '72%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#ff5722', '#e5e7eb'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     const ctxLine = document.getElementById('trendLineChart').getContext('2d');
-    const trendLineChart = new Chart(ctxLine, { type: 'line', data: { labels: Array(15).fill(''), datasets: [{ data: Array(15).fill(0), borderColor: '#18a85b', backgroundColor: 'rgba(24, 168, 91, 0.12)', borderWidth: 2.5, tension: 0.42, pointRadius: 0, fill: true }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
+    const trendLineChart = new Chart(ctxLine, { type: 'line', data: { labels: Array(10).fill(''), datasets: [{ data: Array(10).fill(0), borderColor: '#ff5722', borderWidth: 2, tension: 0.4, pointRadius: 0 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
     
     let detailedChartInstance = null; let currentActiveModal = '';
 
     function setupModalChartConfig(type) {
-      let chartConfig = { type: 'line', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } }, tooltip: { backgroundColor: '#0f172a', padding: 12, cornerRadius: 8, titleFont: { weight: '700' } } }, animation: { duration: 0 } } };
+      let chartConfig = { type: 'line', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top' } }, animation: { duration: 0 } } };
       if (type === 'power') {
-        chartConfig.data.datasets.push({ label: 'Power (Watt)', data: [], borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.14)', fill: true, tension: 0.34, pointRadius: 2 });
-        chartConfig.options.scales = { y: { beginAtZero: true, title: { display: true, text: 'Watt' }, grid: { color: 'rgba(203, 213, 225, 0.6)' } }, x: { grid: { display: false } } };
+        chartConfig.data.datasets.push({ label: 'Power (Watt)', data: [], borderColor: '#ff5722', backgroundColor: 'rgba(255, 87, 34, 0.1)', fill: true, tension: 0.3, pointRadius: 2 });
+        chartConfig.options.scales = { y: { beginAtZero: true, title: { display: true, text: 'Watt' } } };
       } else if (type === 'system') {
-        chartConfig.data.datasets.push({ label: 'Voltage (V)', data: [], borderColor: '#2563eb', backgroundColor: '#2563eb', yAxisID: 'y', tension: 0.34, pointRadius: 2 });
-        chartConfig.data.datasets.push({ label: 'Current (A)', data: [], borderColor: '#18a85b', backgroundColor: '#18a85b', yAxisID: 'y1', tension: 0.34, pointRadius: 2 });
-        chartConfig.options.scales = { y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'V' }, grid: { color: 'rgba(203, 213, 225, 0.6)' } }, y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'A' }, grid: { drawOnChartArea: false } }, x: { grid: { display: false } } };
+        chartConfig.data.datasets.push({ label: 'Voltage (V)', data: [], borderColor: '#38bdf8', backgroundColor: '#38bdf8', yAxisID: 'y', tension: 0.3, pointRadius: 2 });
+        chartConfig.data.datasets.push({ label: 'Current (A)', data: [], borderColor: '#ffc107', backgroundColor: '#ffc107', yAxisID: 'y1', tension: 0.3, pointRadius: 2 });
+        chartConfig.options.scales = { y: { type: 'linear', display: true, position: 'left', title: { display: true, text: 'V' } }, y1: { type: 'linear', display: true, position: 'right', title: { display: true, text: 'A' }, grid: { drawOnChartArea: false } } };
       } else if (type === 'energy') {
-        chartConfig.type = 'bar'; chartConfig.data.datasets.push({ label: 'Energy (kWh)', data: [], backgroundColor: '#18a85b', borderRadius: 8 });
-        chartConfig.options.scales = { y: { beginAtZero: true, title: { display: true, text: 'kWh' }, grid: { color: 'rgba(203, 213, 225, 0.6)' } }, x: { grid: { display: false } } };
+        chartConfig.type = 'bar'; chartConfig.data.datasets.push({ label: 'Energy (kWh)', data: [], backgroundColor: '#10b981', borderRadius: 4 });
+        chartConfig.options.scales = { y: { beginAtZero: true, title: { display: true, text: 'kWh' } } };
       }
       return chartConfig;
     }
@@ -382,9 +150,9 @@
     function openModal(type) {
       document.getElementById('graphModal').style.display = 'flex'; currentActiveModal = type;
       const titleEl = document.getElementById('modalTitle');
-      if (type === 'power') titleEl.innerText = "ประวัติกำลังไฟฟ้า";
-      else if (type === 'system') titleEl.innerText = "สถานะระบบไฟฟ้า";
-      else if (type === 'energy') titleEl.innerText = "ประวัติพลังงาน";
+      if (type === 'power') titleEl.innerText = "⚡ ประวัติกำลังไฟฟ้า";
+      else if (type === 'system') titleEl.innerText = "🔌 สถานะระบบไฟฟ้า";
+      else if (type === 'energy') titleEl.innerText = "🔋 ประวัติพลังงาน";
 
       const ctxDetail = document.getElementById('detailedChartCanvas').getContext('2d');
       if (detailedChartInstance) detailedChartInstance.destroy();
@@ -469,33 +237,26 @@
       fetch(`${WEB_APP_URL}?action=getLatestData`)
         .then(res => res.json())
         .then(data => {
-          if (data.error) {
-            setText('period', data.error);
-            setText('meterStatus', 'ไม่มีข้อมูล');
-            setText('powerAlertTitle', 'ยังไม่มีข้อมูลจากมิเตอร์');
-            setText('powerAlertText', data.error);
-            return;
-          }
+          if (data.error) { document.getElementById('period').innerText = data.error; return; }
+          document.getElementById('period').innerText = "รอบบิล: " + data.sheetName;
+          document.getElementById('power').innerText = data.power;
+          document.getElementById('voltage').innerText = data.voltage;
+          document.getElementById('current').innerText = data.current;
+          document.getElementById('pf').innerText = data.pf;
+          document.getElementById('todayEnergy').innerText = data.todayEnergy;
+          document.getElementById('todayCost').innerText = data.todayCost;
+          document.getElementById('maxPowerToday').innerText = data.maxPowerToday;
+          document.getElementById('thisMonthEnergy').innerText = data.thisMonthEnergy;
+          document.getElementById('thisMonthCost').innerText = data.thisMonthCost;
+          document.getElementById('maxPowerMonth').innerText = data.maxPowerMonth;
+          document.getElementById('totalEnergy').innerText = data.totalEnergy;
+          document.getElementById('last-update').innerText = data.time;
 
-          setText('period', "รอบบิล: " + data.sheetName);
-          setText('power', data.power);
-          setText('voltage', data.voltage);
-          setText('current', data.current);
-          setText('pf', data.pf);
-          setText('todayEnergy', data.todayEnergy);
-          setText('todayCost', data.todayCost);
-          setText('maxPowerToday', data.maxPowerToday);
-          setText('thisMonthEnergy', data.thisMonthEnergy);
-          setText('thisMonthCost', data.thisMonthCost);
-          setText('maxPowerMonth', data.maxPowerMonth);
-          setText('totalEnergy', data.totalEnergy);
-          setText('last-update', data.time);
-          updateDerivedUI(data);
-
+          // 🛡️ อัปเดตลิงก์ปุ่ม OTA อัตโนมัติจาก IP ล่าสุด
           const otaBtn = document.getElementById('otaBtn');
           if (data.espIp && data.espIp !== "") {
             otaBtn.href = "http://" + data.espIp + "/update";
-            otaBtn.style.display = "inline-flex";
+            otaBtn.style.display = "block";
           } else {
             otaBtn.style.display = "none";
           }
@@ -503,18 +264,14 @@
           let now = new Date();
           let timeString = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
           historyTime.push(timeString);
-          historyPower.push(toNumber(data.power)); historyVoltage.push(toNumber(data.voltage)); historyCurrent.push(toNumber(data.current)); historyEnergy.push(toNumber(data.todayEnergy));
+          historyPower.push(parseFloat(data.power) || 0); historyVoltage.push(parseFloat(data.voltage) || 0); historyCurrent.push(parseFloat(data.current) || 0); historyEnergy.push(parseFloat(data.todayEnergy) || 0);
 
           if (historyTime.length > MAX_HISTORY) { historyTime.shift(); historyPower.shift(); historyVoltage.shift(); historyCurrent.shift(); historyEnergy.shift(); }
-          powerData.shift(); powerData.push(toNumber(data.power));
-          powerBarChart.data.labels = getRecentLabels(15);
-          powerBarChart.data.datasets[0].data = powerData;
-          powerBarChart.data.datasets[1].data = getAverageLine(powerData);
+          powerData.shift(); powerData.push(parseFloat(data.power));
           powerBarChart.update();
-          trendLineChart.data.labels = getRecentLabels(15);
           trendLineChart.data.datasets[0].data = powerData; trendLineChart.update();
           
-          let energyVal = toNumber(data.todayEnergy); let maxTarget = 15;
+          let energyVal = parseFloat(data.todayEnergy) || 0; let maxTarget = 15;
           if(energyVal > maxTarget) maxTarget = energyVal + 5;
           todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; todayGauge.update();
 
@@ -522,12 +279,7 @@
             updateChartData(historyTime, historyPower, historyVoltage, historyCurrent, historyEnergy);
           }
         })
-        .catch(err => {
-          setText('meterStatus', 'เชื่อมต่อไม่ได้');
-          setText('powerAlertTitle', 'เชื่อมต่อข้อมูลไม่ได้');
-          setText('powerAlertText', err.message);
-          console.error("Dashboard Update Error:", err);
-        });
+        .catch(err => console.error("Dashboard Update Error:", err));
     }
 
     updateDashboard();
