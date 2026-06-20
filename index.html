@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
   <link rel="stylesheet" href="style.css">
-  
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -29,18 +27,25 @@
           <div class="progress-bar-container"><div class="progress-bar" id="totalProgress" style="width: 100%;"></div></div>
         </div>
         
-        <div class="info-card clickable-card" onclick="openModal('system')">
-          <div class="flex-between" style="margin-bottom: 15px;"><h3 class="card-title">สถานะระบบ (System)</h3></div>
-          <div class="flex-between"><span class="text-sm">แรงดันไฟ (Voltage)</span><span style="font-weight: 600;"><span id="voltage">0</span> V</span></div>
-          <div class="flex-between"><span class="text-sm">กระแสไฟ (Current)</span><span style="font-weight: 600;"><span id="current">0</span> A</span></div>
-          <div class="flex-between"><span class="text-sm">Power Factor</span><span style="font-weight: 600;" id="pf">0</span></div>
+        <div class="info-card clickable-card">
+          <div class="flex-between" style="margin-bottom: 15px;" onclick="openModal('system')">
+            <h3 class="card-title">สถานะระบบ (System)</h3>
+          </div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">แรงดันไฟ (Voltage)</span><span style="font-weight: 600;"><span id="voltage">0</span> V</span></div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">กระแสไฟ (Current)</span><span style="font-weight: 600;"><span id="current">0</span> A</span></div>
+          <div class="flex-between" onclick="openModal('system')"><span class="text-sm">Power Factor</span><span style="font-weight: 600;" id="pf">0</span></div>
+          
+          <div style="margin-top: 15px;">
+            <a id="otaBtn" href="#" target="_blank" style="display: none; background-color: var(--text-main); color: #fff; text-align: center; padding: 8px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: background 0.2s;">
+              🔄 อัปเดตโค้ดไร้สาย (OTA)
+            </a>
+          </div>
         </div>
       </div>
     </div>
 
     <div class="bottom-grid">
       <div class="card clickable-card" onclick="openModal('power')">
-        <div class="card-header"><h3 class="card-title">Current Power</h3></div>
         <div class="stat-row">
           <div class="stat-box"><div class="value" id="power">0</div><div class="unit">Watt (ปัจจุบัน)</div></div>
         </div>
@@ -48,7 +53,6 @@
       </div>
 
       <div class="card clickable-card" onclick="openModal('energy')">
-        <div class="card-header"><h3 class="card-title">Energy Today</h3></div>
         <div class="gauge-container">
           <canvas id="todayGauge"></canvas>
           <div style="position: absolute; bottom: 10px; text-align: center;">
@@ -106,7 +110,7 @@
   </div>
 
   <script>
-    // 🔴 อย่าลืมวาง URL Web App ของ Google Apps Script ไว้ตรงนี้
+    // 🔴 1. วาง URL Web App ของ Google Apps Script ไว้ตรงนี้
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec";
 
     Chart.defaults.font.family = "'Chakra Petch', sans-serif";
@@ -245,6 +249,15 @@
           document.getElementById('maxPowerMonth').innerText = data.maxPowerMonth;
           document.getElementById('totalEnergy').innerText = data.totalEnergy;
           document.getElementById('last-update').innerText = data.time;
+
+          // 🛡️ อัปเดตลิงก์ปุ่ม OTA อัตโนมัติจาก IP ล่าสุด
+          const otaBtn = document.getElementById('otaBtn');
+          if (data.espIp && data.espIp !== "") {
+            otaBtn.href = "http://" + data.espIp + "/update";
+            otaBtn.style.display = "block";
+          } else {
+            otaBtn.style.display = "none";
+          }
 
           let now = new Date();
           let timeString = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
