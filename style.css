@@ -45,6 +45,27 @@ body { font-family: 'Chakra Petch', sans-serif; background-color: var(--bg-color
   pointer-events: none;
 }
 
+/* Hero Right Widgets Panel */
+.hero-right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  flex-shrink: 0;
+  z-index: 2;
+  width: 340px;
+}
+.hero-saving-card {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2), 0 4px 15px rgba(0, 0, 0, 0.02);
+  padding: 15px 20px;
+}
+.hero-saving-card:hover {
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
 /* Energy Flow Widget Styling */
 .energy-flow-container {
   flex-shrink: 0;
@@ -247,6 +268,111 @@ body { font-family: 'Chakra Petch', sans-serif; background-color: var(--bg-color
 
 @keyframes modalFadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } } 
 
+/* Saving Card Styling */
+.saving-card {
+  background-color: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.saving-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.saving-card-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.piggy-icon-container {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: rgba(16, 185, 129, 0.1);
+  color: var(--accent-green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.piggy-svg {
+  width: 38px;
+  height: 38px;
+}
+.saving-details {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.saving-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2px;
+}
+.saving-title {
+  font-weight: 600;
+  font-size: 1.05rem;
+  color: var(--text-muted);
+}
+.info-icon-btn {
+  color: var(--text-muted);
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.info-icon-btn:hover {
+  opacity: 1;
+}
+.info-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+.saving-value-wrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.saving-value {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1;
+}
+.saving-unit {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.saving-subtext {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.saving-up {
+  color: var(--accent-green);
+  font-weight: 700;
+}
+.saving-down {
+  color: var(--accent-orange);
+  font-weight: 700;
+}
+
 @media (max-width: 1024px) { 
   .top-section { grid-template-columns: 1fr; } 
   .hero-card {
@@ -257,6 +383,11 @@ body { font-family: 'Chakra Petch', sans-serif; background-color: var(--bg-color
   } 
   .hero-content { width: 100%; margin-bottom: 20px; max-width: 100%; } 
   .house-image { opacity: 0.20; }
+  .hero-right-panel {
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+  }
 } 
 
 @media (max-width: 600px) { 
@@ -269,6 +400,9 @@ body { font-family: 'Chakra Petch', sans-serif; background-color: var(--bg-color
   .hero-content { width: 100%; } 
   .energy-flow-container {
     width: 100%;
+    max-width: 100%;
+  }
+  .hero-right-panel {
     max-width: 100%;
   }
   .house-image { opacity: 0.12; }
