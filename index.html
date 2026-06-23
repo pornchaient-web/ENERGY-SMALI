@@ -268,12 +268,8 @@
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec";
 
     // ==========================================
-    // 💾 ระบบแจ้งเตือน (เชื่อม Google Sheets)
+    // 💾 ระบบแจ้งเตือน (ดึงจาก Google Sheets)
     // ==========================================
-    let lastDeviceStatus = null;   
-    let lastPowerOverlimit = null; 
-
-    // ดึงประวัติจากชีตขึ้นมาแสดง
     function fetchNotifications() {
       const logsEl = document.getElementById('notificationLogs');
       
@@ -294,7 +290,6 @@
         });
     }
 
-    // ฟังก์ชันวาด UI การแจ้งเตือนบนหน้าจอ
     function renderSingleLog(message, type, timeStr) {
       const logsEl = document.getElementById('notificationLogs');
       let badgeColor = 'var(--accent-blue)';
@@ -311,39 +306,6 @@
       logsEl.appendChild(logItem);
     }
 
-    // ฟังก์ชันบันทึกแจ้งเตือนไปที่ชีต (และโชว์หน้าจอทันที)
-    function addNotificationLog(message, type = 'info') {
-      const now = new Date().toLocaleTimeString('th-TH');
-      const logsEl = document.getElementById('notificationLogs');
-      
-      if (logsEl && logsEl.querySelector('p')) {
-        logsEl.innerHTML = ''; 
-      }
-
-      let badgeColor = 'var(--accent-blue)';
-      if (type === 'danger') badgeColor = 'var(--accent-orange)';
-      if (type === 'warning') badgeColor = 'var(--accent-yellow)';
-
-      const logItem = document.createElement('div');
-      logItem.className = 'status-row';
-      logItem.style.padding = '10px 0';
-      logItem.innerHTML = `
-        <span class="text-sm"><i class="fa-regular fa-bell" style="color:${badgeColor}; margin-right:5px;"></i> [${now}] ${message}</span>
-        <span style="color: ${badgeColor}; font-weight: 600; font-size: 0.85rem;">${type.toUpperCase()}</span>
-      `;
-      
-      if(logsEl) {
-        logsEl.insertBefore(logItem, logsEl.firstChild);
-        while (logsEl.children.length > 50) { logsEl.removeChild(logsEl.lastChild); }
-      }
-
-      // ส่ง API บันทึกลง Google Sheets
-      fetch(`${WEB_APP_URL}?action=logNotification&message=${encodeURIComponent(message)}&type=${type}`)
-        .then(res => res.json())
-        .catch(err => console.error('Error logging to sheet:', err));
-    }
-
-    // ล้างประวัติใน Google Sheets
     function clearNotifications() {
       if(confirm("คุณต้องการล้างประวัติการแจ้งเตือนทั้งหมดในฐานข้อมูลใช่หรือไม่?")) {
         document.getElementById('notificationLogs').innerHTML = '<p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">กำลังล้างข้อมูล...</p>';
@@ -353,7 +315,6 @@
           .catch(err => console.error(err));
       }
     }
-
 
     // ==========================================
     // 🚀 ระบบแสดงผล UI อื่นๆ
@@ -371,7 +332,7 @@
       } else if (pageId === 'settings') {
         fetchSettings();
       } else if (pageId === 'notifications') {
-        fetchNotifications(); // อัปเดตดึงข้อมูลล่าสุดจากชีตเมื่อเข้าหน้านี้
+        fetchNotifications(); // อัปเดตประวัติล่าสุดเมื่อเข้าหน้านี้
       }
     }
 
@@ -511,7 +472,7 @@
         todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; 
         todayGauge.update();
 
-        // 🚨 UPDATE UI STATUS (ONLINE / OFFLINE)
+        // 🚨 อัปเดตสถานะ UI บนหน้าจออย่างเดียว (ระบบบันทึกย้ายไปที่ฝั่ง Google Sheet แล้ว)
         const currentOnline = data.isOnline;
         const mainDeviceStatus = document.getElementById('mainDeviceStatus');
         const statusIconContainer = document.getElementById('statusIconContainer');
@@ -526,13 +487,10 @@
           statusIcon.className = "fa-solid fa-wifi";
           statusSubtext.innerText = "เชื่อมต่อและรับข้อมูลปกติ";
           statusSubtext.style.color = "var(--text-muted)";
-
           if (deviceStatusEl) {
             deviceStatusEl.innerText = "🟢 ออนไลน์ปกติ (Connected)";
             deviceStatusEl.style.color = "var(--accent-green)";
           }
-          if (lastDeviceStatus === false) addNotificationLog("อุปกรณ์กลับมาเชื่อมต่อสัญญาณออนไลน์เรียบร้อย", "info");
-          else if (lastDeviceStatus === null) addNotificationLog("เริ่มทำงาน: เชื่อมต่อหน้าจอเว็บสำเร็จ", "info");
         } else {
           mainDeviceStatus.innerText = "OFFLINE";
           mainDeviceStatus.style.color = "var(--accent-orange)";
@@ -540,18 +498,12 @@
           statusIcon.className = "fa-solid fa-triangle-exclamation";
           statusSubtext.innerText = "อุปกรณ์เงียบหาย/ขาดการติดต่อ";
           statusSubtext.style.color = "var(--accent-orange)";
-
           if (deviceStatusEl) {
             deviceStatusEl.innerText = "🔴 ขาดการติดต่อ (Offline)";
             deviceStatusEl.style.color = "var(--accent-orange)";
           }
-          if (lastDeviceStatus === true || lastDeviceStatus === null) {
-            addNotificationLog("แจ้งเตือน: อุปกรณ์ขาดการส่งข้อมูลเกินเวลาที่ตั้งไว้ (Offline)", "danger");
-          }
         }
-        lastDeviceStatus = currentOnline;
 
-        // 🚨 OVERLIMIT NOTIFICATION
         const currentPowerKw = parseFloat(powerKw);
         const maxLimitKw = parseFloat(data.maxPowerLimit) || 5.0;
         const powerStatusEl = document.getElementById('notifPowerStatus');
@@ -560,17 +512,9 @@
           if (currentPowerKw > maxLimitKw) {
             powerStatusEl.innerText = `⚠️ ใช้งานไฟเกินพิกัด (${powerKw} / ${maxLimitKw} kW)`;
             powerStatusEl.style.color = "var(--accent-orange)";
-            if (lastPowerOverlimit === false || lastPowerOverlimit === null) {
-              addNotificationLog(`⚠️ ตรวจพบการใช้ไฟเกินกำลังที่กำหนด: พุ่งสูงถึง ${powerKw} kW (ลิมิตไว้ที่ ${maxLimitKw} kW)`, "warning");
-            }
-            lastPowerOverlimit = true;
           } else {
             powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`;
             powerStatusEl.style.color = "var(--accent-green)";
-            if (lastPowerOverlimit === true) {
-              addNotificationLog(`พลังงานไฟฟ้ากลับเข้าสู่ระดับปกติ: ปัจจุบันเหลือ ${powerKw} kW`, "info");
-            }
-            lastPowerOverlimit = false;
           }
         }
       });
@@ -612,8 +556,8 @@
 
     // ทำงานเมื่อหน้าโหลดเสร็จ
     window.onload = () => {
-      fetchNotifications(); // ดึงประวัติจากชีต
-      updateDashboard();    // ดึงค่าไฟ
+      fetchNotifications(); 
+      updateDashboard();    
       setInterval(updateDashboard, 10000); 
     };
 
