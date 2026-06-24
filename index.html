@@ -6,6 +6,13 @@
   <title>Smart Energy Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#060913">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="SmartMeter">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -264,15 +271,10 @@
   </div>
 
   <script>
-    // 🔴 1. วาง URL Web App ของ Google Apps Script ไว้ตรงนี้
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec";
 
-    // ==========================================
-    // 💾 ระบบแจ้งเตือน (ดึงจาก Google Sheets)
-    // ==========================================
     function fetchNotifications() {
       const logsEl = document.getElementById('notificationLogs');
-      
       fetch(`${WEB_APP_URL}?action=getNotifications`)
         .then(res => res.json())
         .then(data => {
@@ -281,9 +283,7 @@
             return;
           }
           logsEl.innerHTML = '';
-          data.forEach(log => {
-            renderSingleLog(log.message, log.type, log.time);
-          });
+          data.forEach(log => { renderSingleLog(log.message, log.type, log.time); });
         })
         .catch(err => {
           logsEl.innerHTML = '<p class="text-sm" style="color: var(--accent-orange); text-align: center; padding: 20px 0;">เชื่อมต่อฐานข้อมูลล้มเหลว</p>';
@@ -316,9 +316,6 @@
       }
     }
 
-    // ==========================================
-    // 🚀 ระบบแสดงผล UI อื่นๆ
-    // ==========================================
     function switchPage(pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -332,7 +329,7 @@
       } else if (pageId === 'settings') {
         fetchSettings();
       } else if (pageId === 'notifications') {
-        fetchNotifications(); // อัปเดตประวัติล่าสุดเมื่อเข้าหน้านี้
+        fetchNotifications();
       }
     }
 
@@ -472,7 +469,6 @@
         todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; 
         todayGauge.update();
 
-        // 🚨 อัปเดตสถานะ UI บนหน้าจออย่างเดียว (ระบบบันทึกย้ายไปที่ฝั่ง Google Sheet แล้ว)
         const currentOnline = data.isOnline;
         const mainDeviceStatus = document.getElementById('mainDeviceStatus');
         const statusIconContainer = document.getElementById('statusIconContainer');
@@ -559,8 +555,15 @@
       fetchNotifications(); 
       updateDashboard();    
       setInterval(updateDashboard, 10000); 
-    };
 
+      // ================= REGISTER PWA SERVICE WORKER =================
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA Service Worker ลงทะเบียนสำเร็จ!', reg.scope))
+          .catch(err => console.error('PWA Service Worker ลงทะเบียนล้มเหลว:', err));
+      }
+      // ==============================================================
+    };
   </script>
 </body>
 </html>
