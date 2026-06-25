@@ -10,14 +10,12 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#060913">
   <link rel="apple-touch-icon" href="icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="SmartMeter">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+  <!-- Sidebar (เมนูด้านซ้าย) -->
   <nav class="sidebar">
     <div class="nav-brand"><i class="fa-solid fa-bolt"></i> <span class="nav-text">SmartMeter</span></div>
     <div class="nav-links">
@@ -36,8 +34,10 @@
     </div>
   </nav>
 
+  <!-- เนื้อหาหลัก -->
   <div class="main-content">
     
+    <!-- หน้า 1: Dashboard -->
     <div id="page-dashboard" class="page active">
       <div class="top-section">
         <div class="hero-card">
@@ -92,7 +92,6 @@
                 </div>
               </div>
             </div>
-
           </div>
           <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="House" class="house-image">
         </div>
@@ -151,6 +150,7 @@
       </div>
     </div>
 
+    <!-- หน้า 2: History -->
     <div id="page-history" class="page">
       <div class="history-header">
         <div>
@@ -181,9 +181,10 @@
       </div>
     </div>
 
+    <!-- หน้า 3: Notifications -->
     <div id="page-notifications" class="page">
       <h2 class="page-title">ระบบแจ้งเตือนระบบไฟ</h2>
-      <p class="text-sm">ตรวจสอบสถานะการทำงานของสมาร์ทมิเตอร์และบันทึกเหตุการณ์ผิดปกติ (ดึงจากฐานข้อมูล)</p>
+      <p class="text-sm">ตรวจสอบสถานะการทำงานของสมาร์ทมิเตอร์และบันทึกเหตุการณ์ผิดปกติ</p>
       
       <div class="settings-grid" style="margin-top: 25px;">
         <div class="card">
@@ -201,17 +202,18 @@
         <div class="card">
           <div class="flex-between" style="margin-bottom: 20px;">
             <h3 class="card-title"><i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-yellow)"></i> ประวัติการแจ้งเตือนล่าสุด</h3>
-            <button onclick="clearNotifications()" style="background: rgba(255, 87, 34, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.8rem; transition: 0.3s;">
+            <button onclick="clearNotifications()" style="background: rgba(255, 87, 34, 0.1); color: var(--accent-orange); border: 1px solid var(--accent-orange); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-family: inherit; font-size: 0.8rem;">
               <i class="fa-solid fa-trash-can"></i> ล้างประวัติ
             </button>
           </div>
           <div id="notificationLogs" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px; padding-right: 5px;">
-            <p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">กำลังโหลดประวัติการแจ้งเตือนจากฐานข้อมูล...</p>
+            <p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">กำลังโหลดประวัติการแจ้งเตือน...</p>
           </div>
         </div>
       </div>
     </div>
 
+    <!-- หน้า 4: Settings -->
     <div id="page-settings" class="page">
       <h2 class="page-title">การตั้งค่าระบบ</h2>
       
@@ -225,57 +227,59 @@
           </div>
           <div class="form-group">
             <label class="form-label">ค่า Ft (บาท/หน่วย)</label>
-            <input type="number" id="setFtRate" class="input-field" step="0.0001" placeholder="เช่น 0.3972">
+            <input type="number" id="setFtRate" class="input-field" step="0.0001">
           </div>
           <div class="form-group">
             <label class="form-label">ค่าบริการรายเดือน (บาท)</label>
-            <input type="number" id="setService" class="input-field" step="0.01" placeholder="เช่น 38.22">
+            <input type="number" id="setService" class="input-field" step="0.01">
           </div>
           <div class="form-group">
             <label class="form-label">ภาษีมูลค่าเพิ่ม VAT (ทศนิยม เช่น 0.07)</label>
-            <input type="number" id="setVat" class="input-field" step="0.01" placeholder="เช่น 0.07">
+            <input type="number" id="setVat" class="input-field" step="0.01">
           </div>
 
           <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
-            <label class="form-label" style="color: var(--accent-blue);">🔄 เลขมิเตอร์เริ่มต้น (ปรับยอดสะสมรวม)</label>
+            <label class="form-label" style="color: var(--accent-blue);">🔄 เลขมิเตอร์สะสมรวม (บวกตัวเลขทั้งหมด)</label>
             <input type="number" id="setInitTotal" class="input-field" step="0.1" placeholder="ตัวอย่าง: 15000">
-            <p class="text-sm" style="opacity: 0.7; margin-top: 5px;">*บวกค่านี้เข้ากับข้อมูลดิบที่ ESP ส่งมาเพื่อให้ตรงกับหน้าปัดจริง</p>
           </div>
-          <div class="form-group">
-            <label class="form-label" style="color: var(--accent-blue);">📅 เลขเริ่มต้นประจำรอบบิลนี้ (ตั้งต้นเดือนใหม่)</label>
+          
+          <!-- 🌟 ส่วนที่ปรับปรุงใหม่: ให้ผู้ใช้เลือกเดือนที่ต้องการแก้ไขตัวเลขตั้งต้นได้อิสระ -->
+          <div class="form-group" style="background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2); margin-top: 15px;">
+            <label class="form-label" style="color: var(--accent-green); font-weight: bold;"><i class="fa-regular fa-calendar-check"></i> ปรับเลขมิเตอร์ตั้งต้น แยกเฉพาะรอบบิล</label>
+            <p class="text-sm" style="opacity: 0.8; margin-bottom: 10px;">เลือกเดือนที่ต้องการ แล้วแก้ไขตัวเลขได้ทันทีโดยไม่กระทบเดือนอื่น</p>
+            
+            <select id="settingMonthPicker" class="input-field" onchange="loadCycleMeterForMonth()" style="margin-bottom: 10px;">
+              <option value="">กำลังโหลด...</option>
+            </select>
+            
             <input type="number" id="setInitCycle" class="input-field" step="0.1" placeholder="ตัวอย่าง: 15120">
-            <p class="text-sm" style="opacity: 0.7; margin-top: 5px;">*เว้นไว้ หรือใส่ 0 หากต้องการให้ระบบคำนวณอัตโนมัติจากตารางชีต</p>
+            <p class="text-sm" style="opacity: 0.6; margin-top: 5px;">*ใส่เลข 0 หากต้องการให้ระบบคำนวณอัตโนมัติจากตารางชีต</p>
           </div>
 
           <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
             <label class="form-label" style="color: var(--accent-orange);">⚠️ แจ้งเตือนเมื่อใช้ไฟเกินกำหนด (kW)</label>
-            <input type="number" id="setMaxPower" class="input-field" step="0.1" placeholder="เช่น 5.0">
+            <input type="number" id="setMaxPower" class="input-field" step="0.1">
           </div>
           <div class="form-group">
             <label class="form-label">⏳ ถือว่าออฟไลน์เมื่อข้อมูลขาดหายเกิน (นาที)</label>
-            <input type="number" id="setOfflineTimeout" class="input-field" step="1" placeholder="เช่น 5">
+            <input type="number" id="setOfflineTimeout" class="input-field" step="1">
           </div>
 
           <button class="btn-primary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
-          <p id="saveStatus" style="color: var(--accent-green); font-size: 0.9rem; margin-top: 10px; display: none;"></p>
+          <p id="saveStatus" style="color: var(--accent-green); font-size: 0.9rem; margin-top: 10px; display: none; text-align: center;"></p>
         </div>
 
         <div class="card">
           <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-wifi" style="color: var(--accent-blue)"></i> การเชื่อมต่อเครือข่าย</h3>
-          
           <div class="status-row">
             <span class="text-sm">ESP IP Address</span>
             <span class="status-val" id="sysIp" style="color: var(--accent-blue);">0.0.0.0</span>
           </div>
-          
           <div style="margin-top: 25px;">
             <a id="otaBtn" href="#" target="_blank" class="btn-secondary" style="display: none;">
               <i class="fa-solid fa-cloud-arrow-up"></i> อัปเดตโค้ด OTA (Wi-Fi)
             </a>
           </div>
-          <p class="text-sm" style="margin-top: 15px; opacity: 0.7;">
-            * ปุ่ม OTA จะแสดงขึ้นอัตโนมัติเมื่อระบบตรวจจับ IP ของบอร์ด ESP ได้สำเร็จ และบอร์ดของคุณจะต้องอยู่ในเครือข่าย Wi-Fi เดียวกัน
-          </p>
         </div>
       </div>
     </div>
@@ -287,19 +291,13 @@
 
     function fetchNotifications() {
       const logsEl = document.getElementById('notificationLogs');
-      fetch(`${WEB_APP_URL}?action=getNotifications`)
-        .then(res => res.json())
-        .then(data => {
+      fetch(`${WEB_APP_URL}?action=getNotifications`).then(res => res.json()).then(data => {
           if (!data || data.length === 0) {
-            logsEl.innerHTML = '<p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">ยังไม่มีบันทึกการแจ้งเตือนในฐานข้อมูล</p>';
-            return;
+            logsEl.innerHTML = '<p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">ยังไม่มีบันทึกการแจ้งเตือนในฐานข้อมูล</p>'; return;
           }
           logsEl.innerHTML = '';
           data.forEach(log => { renderSingleLog(log.message, log.type, log.time); });
-        })
-        .catch(err => {
-          logsEl.innerHTML = '<p class="text-sm" style="color: var(--accent-orange); text-align: center; padding: 20px 0;">เชื่อมต่อฐานข้อมูลล้มเหลว</p>';
-        });
+        }).catch(err => { logsEl.innerHTML = '<p class="text-sm" style="color: var(--accent-orange); text-align: center;">เชื่อมต่อฐานข้อมูลล้มเหลว</p>'; });
     }
 
     function renderSingleLog(message, type, timeStr) {
@@ -307,85 +305,56 @@
       let badgeColor = 'var(--accent-blue)';
       if (type === 'danger') badgeColor = 'var(--accent-orange)';
       if (type === 'warning') badgeColor = 'var(--accent-yellow)';
-
       const logItem = document.createElement('div');
-      logItem.className = 'status-row';
-      logItem.style.padding = '10px 0';
-      logItem.innerHTML = `
-        <span class="text-sm"><i class="fa-regular fa-bell" style="color:${badgeColor}; margin-right:5px;"></i> [${timeStr}] ${message}</span>
-        <span style="color: ${badgeColor}; font-weight: 600; font-size: 0.85rem;">${type.toUpperCase()}</span>
-      `;
+      logItem.className = 'status-row'; logItem.style.padding = '10px 0';
+      logItem.innerHTML = `<span class="text-sm"><i class="fa-regular fa-bell" style="color:${badgeColor}; margin-right:5px;"></i> [${timeStr}] ${message}</span><span style="color: ${badgeColor}; font-weight: 600; font-size: 0.85rem;">${type.toUpperCase()}</span>`;
       logsEl.appendChild(logItem);
     }
 
     function clearNotifications() {
-      if(confirm("คุณต้องการล้างประวัติการแจ้งเตือนทั้งหมดในฐานข้อมูลใช่หรือไม่?")) {
-        document.getElementById('notificationLogs').innerHTML = '<p class="text-sm" style="opacity: 0.6; text-align: center; padding: 20px 0;">กำลังล้างข้อมูล...</p>';
-        fetch(`${WEB_APP_URL}?action=clearNotifications`)
-          .then(res => res.json())
-          .then(() => fetchNotifications())
-          .catch(err => console.error(err));
+      if(confirm("คุณต้องการล้างประวัติการแจ้งเตือนทั้งหมดใช่หรือไม่?")) {
+        document.getElementById('notificationLogs').innerHTML = '<p class="text-sm" style="opacity: 0.6; text-align: center;">กำลังล้างข้อมูล...</p>';
+        fetch(`${WEB_APP_URL}?action=clearNotifications`).then(res => res.json()).then(() => fetchNotifications());
       }
     }
 
     function switchPage(pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      
       document.getElementById('page-' + pageId).classList.add('active');
       event.currentTarget.classList.add('active');
 
-      if(pageId === 'history' && !historyChartInstance) {
-        initHistoryChart();
-        loadGraphData();
-      } else if (pageId === 'settings') {
-        fetchSettings();
-      } else if (pageId === 'notifications') {
-        fetchNotifications();
-      }
+      if(pageId === 'history' && !historyChartInstance) { initHistoryChart(); loadGraphData(); } 
+      else if (pageId === 'settings') { fetchSettings(); } 
+      else if (pageId === 'notifications') { fetchNotifications(); }
     }
 
     Chart.defaults.font.family = "'Chakra Petch', sans-serif";
-    Chart.defaults.color = '#94a3b8';
-    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
-
+    Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
     const ctxBar = document.getElementById('powerBarChart').getContext('2d');
-    let gradBar = ctxBar.createLinearGradient(0, 0, 0, 80);
-    gradBar.addColorStop(0, '#10b981'); gradBar.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+    let gradBar = ctxBar.createLinearGradient(0, 0, 0, 80); gradBar.addColorStop(0, '#10b981'); gradBar.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
     let powerData = Array(15).fill(0);
     const powerBarChart = new Chart(ctxBar, { type: 'bar', data: { labels: Array(15).fill(''), datasets: [{ data: powerData, backgroundColor: gradBar, borderRadius: 4, barPercentage: 0.6 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { display: false }, y: { display: false, min: 0 } }, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
-    
     const ctxGauge = document.getElementById('todayGauge').getContext('2d');
     const todayGauge = new Chart(ctxGauge, { type: 'doughnut', data: { datasets: [{ data: [0, 10], backgroundColor: ['#10b981', 'rgba(255, 255, 255, 0.06)'], borderWidth: 0, circumference: 180, rotation: 270, cutout: '80%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { enabled: false } } } });
-
     let historyChartInstance = null;
+
     function initHistoryChart() {
       const ctx = document.getElementById('historyChartCanvas').getContext('2d');
-      historyChartInstance = new Chart(ctx, {
-        type: 'line', data: { labels: [], datasets: [] },
-        options: { 
-          responsive: true, maintainAspectRatio: false, 
-          interaction: { mode: 'index', intersect: false }, 
-          plugins: { legend: { position: 'top', labels: { color: '#e2e8f0' } } },
-          scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } }
-        }
-      });
+      historyChartInstance = new Chart(ctx, { type: 'line', data: { labels: [], datasets: [] }, options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { position: 'top', labels: { color: '#e2e8f0' } } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } } });
     }
 
     function handleRangeChange() {
       const range = document.getElementById('timeRange').value;
       const datePicker = document.getElementById('datePicker'); 
       const monthPicker = document.getElementById('monthPicker');
-      
       datePicker.style.display = (range === 'specific_date') ? 'block' : 'none';
       monthPicker.style.display = (range === 'specific_month') ? 'block' : 'none';
       
       if (range === 'specific_month' && monthPicker.options.length <= 1) {
         monthPicker.innerHTML = '<option value="">กำลังโหลด...</option>';
         fetch(`${WEB_APP_URL}?action=getAvailableMonths`).then(res => res.json()).then(months => {
-            monthPicker.innerHTML = '';
-            months.forEach(m => { monthPicker.appendChild(new Option(m, m)); });
-            loadGraphData(); 
+            monthPicker.innerHTML = ''; months.forEach(m => { monthPicker.appendChild(new Option(m, m)); }); loadGraphData(); 
         });
       } else {
         if (range === 'specific_date' && !datePicker.value) datePicker.valueAsDate = new Date();
@@ -405,10 +374,8 @@
       if (specificValue) url += `&specificValue=${specificValue}`;
       
       fetch(url).then(res => res.json()).then(data => {
-        // 🌟 แก้ไขเพื่อรองรับ range === 'all_months'
         let textRange = range === 'today' ? 'วันนี้' : range === 'yesterday' ? 'เมื่อวาน' : range === '7days' ? 'ย้อนหลัง 7 วัน' : range === 'all_months' ? 'ภาพรวมรายเดือนทั้งหมด' : specificValue;
-        subtitleEl.innerText = `แสดงผลข้อมูล: ${textRange}`;
-        updateHistoryChartUI(type, data);
+        subtitleEl.innerText = `แสดงผลข้อมูล: ${textRange}`; updateHistoryChartUI(type, data);
       }).catch(err => subtitleEl.innerText = "ผิดพลาด: " + err.message);
     }
 
@@ -416,16 +383,13 @@
       historyChartInstance.data.labels = data.times || [];
       historyChartInstance.data.datasets = [];
       const ctx = document.getElementById('historyChartCanvas').getContext('2d');
-      
       if (type === 'power') {
         historyChartInstance.config.type = 'line';
-        let grad = ctx.createLinearGradient(0, 0, 0, 300);
-        grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)'); grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+        let grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)'); grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
         historyChartInstance.data.datasets.push({ label: 'Power (kW)', data: (data.powers||[]).map(p=>p/1000), borderColor: '#10b981', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
       } else if (type === 'energy') {
         historyChartInstance.config.type = 'bar';
-        let gradE = ctx.createLinearGradient(0, 0, 0, 300);
-        gradE.addColorStop(0, 'rgba(56, 189, 248, 0.8)'); gradE.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
+        let gradE = ctx.createLinearGradient(0, 0, 0, 300); gradE.addColorStop(0, 'rgba(56, 189, 248, 0.8)'); gradE.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
         historyChartInstance.data.datasets.push({ label: 'Energy (kWh)', data: data.energies||[], backgroundColor: gradE, borderRadius: 4 });
       } else if (type === 'system') {
         historyChartInstance.config.type = 'line';
@@ -440,10 +404,8 @@
         if (data.error) { document.getElementById('period').innerText = data.error; return; }
         
         const powerKw = (parseFloat(data.power) / 1000).toFixed(2);
-        
         document.getElementById('period').innerText = "รอบบิล: " + data.sheetName;
         document.getElementById('last-update').innerText = data.time;
-        
         document.getElementById('power').innerText = powerKw;
         document.getElementById('todayEnergy').innerText = data.todayEnergy;
         document.getElementById('todayCost').innerText = data.todayCost;
@@ -453,7 +415,6 @@
         document.getElementById('totalEnergy').innerText = data.totalEnergy;
         document.getElementById('gridPowerValue').innerText = powerKw;
         document.getElementById('housePowerValue').innerText = powerKw;
-
         document.getElementById('sysVoltage').innerText = data.voltage;
         document.getElementById('sysCurrent').innerText = data.current;
         document.getElementById('sysPf').innerText = data.pf;
@@ -469,18 +430,12 @@
         }
 
         const otaBtn = document.getElementById('otaBtn');
-        if (data.espIp && data.espIp !== "") {
-          otaBtn.href = "http://" + data.espIp + "/update";
-          otaBtn.style.display = "inline-block";
-        }
+        if (data.espIp && data.espIp !== "") { otaBtn.href = "http://" + data.espIp + "/update"; otaBtn.style.display = "inline-block"; }
 
-        powerData.shift(); powerData.push(powerKw);
-        powerBarChart.update();
-        
+        powerData.shift(); powerData.push(powerKw); powerBarChart.update();
         let energyVal = parseFloat(data.todayEnergy) || 0; 
         let maxTarget = energyVal > 15 ? energyVal + 5 : 15;
-        todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; 
-        todayGauge.update();
+        todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; todayGauge.update();
 
         const currentOnline = data.isOnline;
         const mainDeviceStatus = document.getElementById('mainDeviceStatus');
@@ -490,45 +445,28 @@
         const deviceStatusEl = document.getElementById('notifDeviceStatus');
 
         if (currentOnline) {
-          mainDeviceStatus.innerText = "ONLINE";
-          mainDeviceStatus.style.color = "var(--accent-green)";
-          statusIconContainer.className = "status-icon-container online";
-          statusIcon.className = "fa-solid fa-wifi";
-          statusSubtext.innerText = "เชื่อมต่อและรับข้อมูลปกติ";
-          statusSubtext.style.color = "var(--text-muted)";
-          if (deviceStatusEl) {
-            deviceStatusEl.innerText = "🟢 ออนไลน์ปกติ (Connected)";
-            deviceStatusEl.style.color = "var(--accent-green)";
-          }
+          mainDeviceStatus.innerText = "ONLINE"; mainDeviceStatus.style.color = "var(--accent-green)";
+          statusIconContainer.className = "status-icon-container online"; statusIcon.className = "fa-solid fa-wifi";
+          statusSubtext.innerText = "เชื่อมต่อและรับข้อมูลปกติ"; statusSubtext.style.color = "var(--text-muted)";
+          if (deviceStatusEl) { deviceStatusEl.innerText = "🟢 ออนไลน์ปกติ (Connected)"; deviceStatusEl.style.color = "var(--accent-green)"; }
         } else {
-          mainDeviceStatus.innerText = "OFFLINE";
-          mainDeviceStatus.style.color = "var(--accent-orange)";
-          statusIconContainer.className = "status-icon-container offline";
-          statusIcon.className = "fa-solid fa-triangle-exclamation";
-          statusSubtext.innerText = "อุปกรณ์เงียบหาย/ขาดการติดต่อ";
-          statusSubtext.style.color = "var(--accent-orange)";
-          if (deviceStatusEl) {
-            deviceStatusEl.innerText = "🔴 ขาดการติดต่อ (Offline)";
-            deviceStatusEl.style.color = "var(--accent-orange)";
-          }
+          mainDeviceStatus.innerText = "OFFLINE"; mainDeviceStatus.style.color = "var(--accent-orange)";
+          statusIconContainer.className = "status-icon-container offline"; statusIcon.className = "fa-solid fa-triangle-exclamation";
+          statusSubtext.innerText = "อุปกรณ์เงียบหาย/ขาดการติดต่อ"; statusSubtext.style.color = "var(--accent-orange)";
+          if (deviceStatusEl) { deviceStatusEl.innerText = "🔴 ขาดการติดต่อ (Offline)"; deviceStatusEl.style.color = "var(--accent-orange)"; }
         }
 
         const currentPowerKw = parseFloat(powerKw);
         const maxLimitKw = parseFloat(data.maxPowerLimit) || 5.0;
         const powerStatusEl = document.getElementById('notifPowerStatus');
-        
         if (powerStatusEl) {
-          if (currentPowerKw > maxLimitKw) {
-            powerStatusEl.innerText = `⚠️ ใช้งานไฟเกินพิกัด (${powerKw} / ${maxLimitKw} kW)`;
-            powerStatusEl.style.color = "var(--accent-orange)";
-          } else {
-            powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`;
-            powerStatusEl.style.color = "var(--accent-green)";
-          }
+          if (currentPowerKw > maxLimitKw) { powerStatusEl.innerText = `⚠️ ใช้งานไฟเกินพิกัด (${powerKw} / ${maxLimitKw} kW)`; powerStatusEl.style.color = "var(--accent-orange)"; } 
+          else { powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`; powerStatusEl.style.color = "var(--accent-green)"; }
         }
       });
     }
 
+    // 🌟 ดึงข้อมูลรายชื่อเดือนมายัดใน Dropdown
     function fetchSettings() {
       fetch(`${WEB_APP_URL}?action=getSettings`).then(res => res.json()).then(config => {
         document.getElementById('setBillDay').value = config.billDay || 25;
@@ -537,10 +475,34 @@
         document.getElementById('setVat').value = config.vatRate || 0.07;
         document.getElementById('setMaxPower').value = config.maxPower || 5.0;
         document.getElementById('setOfflineTimeout').value = config.offlineTimeout || 5;
-        // 🌟 ดึงค่าตั้งต้นมิเตอร์
         document.getElementById('setInitTotal').value = config.initialTotalMeter || 0;
-        document.getElementById('setInitCycle').value = config.initialCycleMeter || 0;
+        
+        const monthPicker = document.getElementById('settingMonthPicker');
+        monthPicker.innerHTML = '';
+        
+        if (config.availableMonths && config.availableMonths.length > 0) {
+           config.availableMonths.forEach(m => { monthPicker.appendChild(new Option(m, m)); });
+           monthPicker.value = config.currentMonth; // เลือกเดือนปัจจุบันให้เป็นค่าเริ่มต้น
+           loadCycleMeterForMonth(); // โหลดตัวเลขของเดือนนั้นๆ ออกมาโชว์
+        } else {
+           monthPicker.innerHTML = '<option value="">ไม่มีข้อมูลรอบบิล</option>';
+        }
       });
+    }
+
+    // 🌟 ฟังก์ชันโหลดเลขมิเตอร์ตั้งต้นของเดือนที่ถูกเลือกใน Dropdown
+    function loadCycleMeterForMonth() {
+      const targetMonth = document.getElementById('settingMonthPicker').value;
+      if (!targetMonth) return;
+      
+      document.getElementById('setInitCycle').value = "กำลังโหลด...";
+      fetch(`${WEB_APP_URL}?action=getCycleMeter&month=${encodeURIComponent(targetMonth)}`)
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById('setInitCycle').value = data.value || 0;
+        }).catch(err => {
+            document.getElementById('setInitCycle').value = 0;
+        });
     }
 
     function saveSettings() {
@@ -550,14 +512,23 @@
       const vatRate = document.getElementById('setVat').value;
       const maxPower = document.getElementById('setMaxPower').value;
       const offlineTimeout = document.getElementById('setOfflineTimeout').value;
-      // 🌟 บันทึกค่าตั้งต้นมิเตอร์
       const initialTotalMeter = document.getElementById('setInitTotal').value || 0;
+      
+      // 🌟 ดึงข้อมูลเดือนที่ถูกเลือก กับเลขที่ผู้ใช้กรอก
+      const targetMonth = document.getElementById('settingMonthPicker').value;
       const initialCycleMeter = document.getElementById('setInitCycle').value || 0;
       
       const btn = document.querySelector('.btn-primary');
       btn.innerText = "กำลังบันทึก...";
       
-      fetch(`${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}&initialCycleMeter=${initialCycleMeter}`)
+      let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}`;
+      
+      // แนบค่าของเดือนนี้ไปด้วย (ถ้ามี)
+      if (targetMonth) {
+         url += `&targetMonth=${encodeURIComponent(targetMonth)}&initialCycleMeter=${initialCycleMeter}`;
+      }
+      
+      fetch(url)
         .then(res => res.json())
         .then(res => {
           btn.innerText = "💾 บันทึกการตั้งค่า";
@@ -569,19 +540,8 @@
         });
     }
 
-    // ทำงานเมื่อหน้าโหลดเสร็จ
     window.onload = () => {
-      fetchNotifications(); 
-      updateDashboard();    
-      setInterval(updateDashboard, 10000); 
-
-      // ================= REGISTER PWA SERVICE WORKER =================
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('PWA Service Worker ลงทะเบียนสำเร็จ!', reg.scope))
-          .catch(err => console.error('PWA Service Worker ลงทะเบียนล้มเหลว:', err));
-      }
-      // ==============================================================
+      fetchNotifications(); updateDashboard(); setInterval(updateDashboard, 10000); 
     };
   </script>
 </body>
