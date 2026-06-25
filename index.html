@@ -169,6 +169,7 @@
             <option value="7days" selected>ย้อนหลัง 7 วัน (7 Days)</option>
             <option value="specific_date">📅 เลือกวันที่...</option>
             <option value="specific_month">📑 เลือกรอบบิล...</option>
+            <option value="all_months">📊 รายเดือน (Monthly Summary)</option>
           </select>
           <input type="date" id="datePicker" class="input-field" style="display: none;" onchange="loadGraphData()">
           <select id="monthPicker" class="input-field" style="display: none;" onchange="loadGraphData()"></select>
@@ -404,7 +405,8 @@
       if (specificValue) url += `&specificValue=${specificValue}`;
       
       fetch(url).then(res => res.json()).then(data => {
-        let textRange = range === 'today' ? 'วันนี้' : range === 'yesterday' ? 'เมื่อวาน' : range === '7days' ? 'ย้อนหลัง 7 วัน' : specificValue;
+        // 🌟 แก้ไขเพื่อรองรับ range === 'all_months'
+        let textRange = range === 'today' ? 'วันนี้' : range === 'yesterday' ? 'เมื่อวาน' : range === '7days' ? 'ย้อนหลัง 7 วัน' : range === 'all_months' ? 'ภาพรวมรายเดือนทั้งหมด' : specificValue;
         subtitleEl.innerText = `แสดงผลข้อมูล: ${textRange}`;
         updateHistoryChartUI(type, data);
       }).catch(err => subtitleEl.innerText = "ผิดพลาด: " + err.message);
@@ -535,7 +537,7 @@
         document.getElementById('setVat').value = config.vatRate || 0.07;
         document.getElementById('setMaxPower').value = config.maxPower || 5.0;
         document.getElementById('setOfflineTimeout').value = config.offlineTimeout || 5;
-        // ค่ามิเตอร์
+        // 🌟 ดึงค่าตั้งต้นมิเตอร์
         document.getElementById('setInitTotal').value = config.initialTotalMeter || 0;
         document.getElementById('setInitCycle').value = config.initialCycleMeter || 0;
       });
@@ -548,6 +550,7 @@
       const vatRate = document.getElementById('setVat').value;
       const maxPower = document.getElementById('setMaxPower').value;
       const offlineTimeout = document.getElementById('setOfflineTimeout').value;
+      // 🌟 บันทึกค่าตั้งต้นมิเตอร์
       const initialTotalMeter = document.getElementById('setInitTotal').value || 0;
       const initialCycleMeter = document.getElementById('setInitCycle').value || 0;
       
