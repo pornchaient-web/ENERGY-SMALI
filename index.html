@@ -216,7 +216,7 @@
       
       <div class="settings-grid">
         <div class="card">
-          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-sliders" style="color: var(--accent-green)"></i> ตั้งค่าการคำนวณบิลและการแจ้งเตือน</h3>
+          <h3 class="card-title" style="margin-bottom: 20px;"><i class="fa-solid fa-sliders" style="color: var(--accent-green)"></i> ตั้งค่ามิเตอร์และการคำนวณบิล</h3>
           
           <div class="form-group">
             <label class="form-label">วันตัดรอบบิล (วันที่ 1-28)</label>
@@ -233,6 +233,17 @@
           <div class="form-group">
             <label class="form-label">ภาษีมูลค่าเพิ่ม VAT (ทศนิยม เช่น 0.07)</label>
             <input type="number" id="setVat" class="input-field" step="0.01" placeholder="เช่น 0.07">
+          </div>
+
+          <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
+            <label class="form-label" style="color: var(--accent-blue);">🔄 เลขมิเตอร์เริ่มต้น (ปรับยอดสะสมรวม)</label>
+            <input type="number" id="setInitTotal" class="input-field" step="0.1" placeholder="ตัวอย่าง: 15000">
+            <p class="text-sm" style="opacity: 0.7; margin-top: 5px;">*บวกค่านี้เข้ากับข้อมูลดิบที่ ESP ส่งมาเพื่อให้ตรงกับหน้าปัดจริง</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color: var(--accent-blue);">📅 เลขเริ่มต้นประจำรอบบิลนี้ (ตั้งต้นเดือนใหม่)</label>
+            <input type="number" id="setInitCycle" class="input-field" step="0.1" placeholder="ตัวอย่าง: 15120">
+            <p class="text-sm" style="opacity: 0.7; margin-top: 5px;">*เว้นไว้ หรือใส่ 0 หากต้องการให้ระบบคำนวณอัตโนมัติจากตารางชีต</p>
           </div>
 
           <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
@@ -524,6 +535,9 @@
         document.getElementById('setVat').value = config.vatRate || 0.07;
         document.getElementById('setMaxPower').value = config.maxPower || 5.0;
         document.getElementById('setOfflineTimeout').value = config.offlineTimeout || 5;
+        // ค่ามิเตอร์
+        document.getElementById('setInitTotal').value = config.initialTotalMeter || 0;
+        document.getElementById('setInitCycle').value = config.initialCycleMeter || 0;
       });
     }
 
@@ -534,11 +548,13 @@
       const vatRate = document.getElementById('setVat').value;
       const maxPower = document.getElementById('setMaxPower').value;
       const offlineTimeout = document.getElementById('setOfflineTimeout').value;
+      const initialTotalMeter = document.getElementById('setInitTotal').value || 0;
+      const initialCycleMeter = document.getElementById('setInitCycle').value || 0;
       
       const btn = document.querySelector('.btn-primary');
       btn.innerText = "กำลังบันทึก...";
       
-      fetch(`${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}`)
+      fetch(`${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}&initialCycleMeter=${initialCycleMeter}`)
         .then(res => res.json())
         .then(res => {
           btn.innerText = "💾 บันทึกการตั้งค่า";
