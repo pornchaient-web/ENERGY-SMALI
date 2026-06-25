@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smartmeter-v1';
+const CACHE_NAME = 'smartmeter-v2';
 const ASSETS = [
   './',
   './index.html',
