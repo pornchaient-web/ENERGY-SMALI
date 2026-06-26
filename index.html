@@ -15,29 +15,26 @@
 </head>
 <body>
 
-  <!-- Sidebar (เมนูด้านซ้าย) -->
   <nav class="sidebar">
     <div class="nav-brand"><i class="fa-solid fa-bolt"></i> <span class="nav-text">SmartMeter</span></div>
     <div class="nav-links">
-      <a href="#" class="nav-item active" onclick="switchPage('dashboard')">
+      <a href="#" class="nav-item active" onclick="switchPage(event, 'dashboard')">
         <i class="fa-solid fa-house"></i><span class="nav-text">หน้าหลัก</span>
       </a>
-      <a href="#" class="nav-item" onclick="switchPage('history')">
+      <a href="#" class="nav-item" onclick="switchPage(event, 'history')">
         <i class="fa-solid fa-chart-line"></i><span class="nav-text">ประวัติ</span>
       </a>
-      <a href="#" class="nav-item" onclick="switchPage('notifications')">
+      <a href="#" class="nav-item" onclick="switchPage(event, 'notifications')">
         <i class="fa-solid fa-bell"></i><span class="nav-text">แจ้งเตือน</span>
       </a>
-      <a href="#" class="nav-item" onclick="switchPage('settings')">
+      <a href="#" class="nav-item" onclick="switchPage(event, 'settings')">
         <i class="fa-solid fa-gear"></i><span class="nav-text">ตั้งค่า</span>
       </a>
     </div>
   </nav>
 
-  <!-- เนื้อหาหลัก -->
   <div class="main-content">
     
-    <!-- หน้า 1: Dashboard -->
     <div id="page-dashboard" class="page active">
       <div class="top-section">
         <div class="hero-card">
@@ -150,7 +147,6 @@
       </div>
     </div>
 
-    <!-- หน้า 2: History -->
     <div id="page-history" class="page">
       <div class="history-header">
         <div>
@@ -181,7 +177,6 @@
       </div>
     </div>
 
-    <!-- หน้า 3: Notifications -->
     <div id="page-notifications" class="page">
       <h2 class="page-title">ระบบแจ้งเตือนระบบไฟ</h2>
       <p class="text-sm">ตรวจสอบสถานะการทำงานของสมาร์ทมิเตอร์และบันทึกเหตุการณ์ผิดปกติ</p>
@@ -213,7 +208,6 @@
       </div>
     </div>
 
-    <!-- หน้า 4: Settings -->
     <div id="page-settings" class="page">
       <h2 class="page-title">การตั้งค่าระบบ</h2>
       
@@ -243,7 +237,6 @@
             <input type="number" id="setInitTotal" class="input-field" step="0.1" placeholder="ตัวอย่าง: 15000">
           </div>
           
-          <!-- 🌟 ส่วนที่ปรับปรุงใหม่: ให้ผู้ใช้เลือกเดือนที่ต้องการแก้ไขตัวเลขตั้งต้นได้อิสระ -->
           <div class="form-group" style="background: rgba(16, 185, 129, 0.05); padding: 15px; border-radius: 12px; border: 1px solid rgba(16, 185, 129, 0.2); margin-top: 15px;">
             <label class="form-label" style="color: var(--accent-green); font-weight: bold;"><i class="fa-regular fa-calendar-check"></i> ปรับเลขมิเตอร์ตั้งต้น แยกเฉพาะรอบบิล</label>
             <p class="text-sm" style="opacity: 0.8; margin-bottom: 10px;">เลือกเดือนที่ต้องการ แล้วแก้ไขตัวเลขได้ทันทีโดยไม่กระทบเดือนอื่น</p>
@@ -287,7 +280,7 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec"; // อย่าลืมแก้ให้เป็น URL ปัจจุบันของคุณ
 
     function fetchNotifications() {
       const logsEl = document.getElementById('notificationLogs');
@@ -318,13 +311,21 @@
       }
     }
 
-    function switchPage(pageId) {
+    // 🌟 แก้ไขฟังก์ชัน switchPage เพื่อรองรับ event ป้องกัน Error event is undefined
+    function switchPage(event, pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
       document.getElementById('page-' + pageId).classList.add('active');
-      event.currentTarget.classList.add('active');
+      
+      if (event && event.currentTarget) {
+          event.currentTarget.classList.add('active');
+      } else {
+          // หากไม่มี event ถูกส่งมาให้พยายามค้นหาปุ่มที่มีคำสั่งดังกล่าว
+          const link = document.querySelector(`.nav-item[onclick*="${pageId}"]`);
+          if (link) link.classList.add('active');
+      }
 
-      if(pageId === 'history' && !historyChartInstance) { initHistoryChart(); loadGraphData(); } 
+      if (pageId === 'history' && !historyChartInstance) { initHistoryChart(); loadGraphData(); } 
       else if (pageId === 'settings') { fetchSettings(); } 
       else if (pageId === 'notifications') { fetchNotifications(); }
     }
@@ -466,7 +467,6 @@
       });
     }
 
-    // 🌟 ดึงข้อมูลรายชื่อเดือนมายัดใน Dropdown
     function fetchSettings() {
       fetch(`${WEB_APP_URL}?action=getSettings`).then(res => res.json()).then(config => {
         document.getElementById('setBillDay').value = config.billDay || 25;
@@ -482,15 +482,14 @@
         
         if (config.availableMonths && config.availableMonths.length > 0) {
            config.availableMonths.forEach(m => { monthPicker.appendChild(new Option(m, m)); });
-           monthPicker.value = config.currentMonth; // เลือกเดือนปัจจุบันให้เป็นค่าเริ่มต้น
-           loadCycleMeterForMonth(); // โหลดตัวเลขของเดือนนั้นๆ ออกมาโชว์
+           monthPicker.value = config.currentMonth;
+           loadCycleMeterForMonth();
         } else {
            monthPicker.innerHTML = '<option value="">ไม่มีข้อมูลรอบบิล</option>';
         }
       });
     }
 
-    // 🌟 ฟังก์ชันโหลดเลขมิเตอร์ตั้งต้นของเดือนที่ถูกเลือกใน Dropdown
     function loadCycleMeterForMonth() {
       const targetMonth = document.getElementById('settingMonthPicker').value;
       if (!targetMonth) return;
@@ -514,7 +513,6 @@
       const offlineTimeout = document.getElementById('setOfflineTimeout').value;
       const initialTotalMeter = document.getElementById('setInitTotal').value || 0;
       
-      // 🌟 ดึงข้อมูลเดือนที่ถูกเลือก กับเลขที่ผู้ใช้กรอก
       const targetMonth = document.getElementById('settingMonthPicker').value;
       const initialCycleMeter = document.getElementById('setInitCycle').value || 0;
       
@@ -523,7 +521,6 @@
       
       let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}`;
       
-      // แนบค่าของเดือนนี้ไปด้วย (ถ้ามี)
       if (targetMonth) {
          url += `&targetMonth=${encodeURIComponent(targetMonth)}&initialCycleMeter=${initialCycleMeter}`;
       }
@@ -540,8 +537,18 @@
         });
     }
 
+    // 🌟 โหลดระบบ + เพิ่ม Service Worker 
     window.onload = () => {
-      fetchNotifications(); updateDashboard(); setInterval(updateDashboard, 10000); 
+      fetchNotifications(); 
+      updateDashboard(); 
+      setInterval(updateDashboard, 10000); 
+      
+      // การลงทะเบียน Service Worker สำหรับ PWA
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('Service Worker registered successfully!', reg))
+          .catch(err => console.error('Service Worker registration failed:', err));
+      }
     };
   </script>
 </body>
