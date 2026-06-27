@@ -46,6 +46,23 @@ body {
 .nav-item.active { background: rgba(0, 240, 255, 0.1); color: var(--accent-blue); border: 1px solid rgba(0, 240, 255, 0.2); }
 .nav-item i { font-size: 1.2rem; width: 24px; text-align: center; }
 
+/* 🌟 จุดแจ้งเตือนสีแดงกะพริบที่เมนู */
+.nav-badge {
+  display: inline-block;
+  background: var(--accent-orange);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-left: auto;
+  box-shadow: 0 0 8px rgba(255, 87, 34, 0.8);
+  animation: pulseBadge 1.5s infinite;
+}
+@keyframes pulseBadge {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 /* ================= MAIN CONTENT ================= */
 .main-content {
   flex: 1;
@@ -119,7 +136,7 @@ body {
 .house-circle { width: 70px; height: 70px; border-radius: 50%; background: rgba(17, 25, 40, 0.85); border: 3px solid var(--accent-green); color: var(--accent-green); font-size: 1.5rem; animation: circlePulse 2s infinite alternate; }
 @keyframes circlePulse { 0% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.2); transform: scale(1); } 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.6); transform: scale(1.04); } }
 
-/* ================= ONLINE/OFFLINE STATUS CARD (NEW) ================= */
+/* ================= ONLINE/OFFLINE STATUS CARD ================= */
 .status-card { padding: 15px 20px; background: rgba(17, 25, 40, 0.6); border: 1px solid var(--card-border); position: relative; overflow: hidden; }
 .status-card-content { display: flex; align-items: center; gap: 20px; }
 
