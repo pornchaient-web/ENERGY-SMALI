@@ -258,9 +258,14 @@
             <label class="form-label">⏳ ถือว่าออฟไลน์เมื่อข้อมูลขาดหายเกิน (นาที)</label>
             <input type="number" id="setOfflineTimeout" class="input-field" step="1">
           </div>
+          
           <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
-            <label class="form-label" style="color: #00b900;"><i class="fa-brands fa-line"></i> LINE Notify Token (แจ้งเตือนผ่านไลน์)</label>
-            <input type="text" id="setLineToken" class="input-field" placeholder="ใส่ Token ที่ได้จาก LINE Notify...">
+            <label class="form-label" style="color: #229ED9;"><i class="fa-brands fa-telegram"></i> Telegram Bot Token</label>
+            <input type="text" id="setTelegramBotToken" class="input-field" placeholder="ใส่ Bot Token (เช่น 123456:ABC-DEF1234ghIkl...)">
+          </div>
+          <div class="form-group">
+            <label class="form-label" style="color: #229ED9;"><i class="fa-solid fa-hashtag"></i> Telegram Chat ID</label>
+            <input type="text" id="setTelegramChatId" class="input-field" placeholder="ใส่ Chat ID (เช่น 123456789 หรือ -100123456789)">
           </div>
 
           <button class="btn-primary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
@@ -285,7 +290,7 @@
   </div>
 
   <script>
-    // ⚠️ อย่าลืมแก้ให้เป็น Web App URL ของคุณ
+    // ⚠️ อย่าลืมแก้ให้เป็น Web App URL ของคุณ (อัปเดตเป็นลิงก์ที่ Deploy ใหม่)
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec"; 
 
     function triggerDesktopNotification(title, body) {
@@ -327,7 +332,6 @@
       if(confirm("คุณต้องการล้างประวัติการแจ้งเตือนทั้งหมดใช่หรือไม่?")) {
         document.getElementById('notificationLogs').innerHTML = '<p class="text-sm" style="opacity: 0.6; text-align: center;">กำลังล้างข้อมูล...</p>';
         fetch(`${WEB_APP_URL}?action=clearNotifications`).then(res => res.json()).then(() => {
-            // 🌟 รีเซ็ตค่าความจำ Notification
             localStorage.setItem('saved_log_count', '0');
             window.currentServerLogCount = 0;
             fetchNotifications();
@@ -351,7 +355,6 @@
       else if (pageId === 'settings') { fetchSettings(); } 
       else if (pageId === 'notifications') { 
         fetchNotifications(); 
-        // 🌟 จำค่าเมื่ออ่านแล้ว และซ่อนจุดแดง
         if (window.currentServerLogCount !== undefined) {
           localStorage.setItem('saved_log_count', window.currentServerLogCount);
         }
@@ -495,7 +498,6 @@
           else { powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`; powerStatusEl.style.color = "var(--accent-green)"; }
         }
 
-        // 🌟 จัดการ Web Push Notification และ Badge เมนูการแจ้งเตือน
         const lastOnlineState = localStorage.getItem('last_online_state');
         const currentOnlineState = currentOnline ? 'online' : 'offline';
         if (lastOnlineState && lastOnlineState !== currentOnlineState) {
@@ -541,7 +543,10 @@
         document.getElementById('setMaxPower').value = config.maxPower || 5.0;
         document.getElementById('setOfflineTimeout').value = config.offlineTimeout || 5;
         document.getElementById('setInitTotal').value = config.initialTotalMeter || 0;
-        document.getElementById('setLineToken').value = config.lineToken || ""; // 🌟 โหลดค่า LINE Token
+        
+        // 🌟 โหลดค่า Telegram
+        document.getElementById('setTelegramBotToken').value = config.telegramBotToken || ""; 
+        document.getElementById('setTelegramChatId').value = config.telegramChatId || ""; 
         
         const monthPicker = document.getElementById('settingMonthPicker');
         monthPicker.innerHTML = '';
@@ -578,7 +583,10 @@
       const maxPower = document.getElementById('setMaxPower').value;
       const offlineTimeout = document.getElementById('setOfflineTimeout').value;
       const initialTotalMeter = document.getElementById('setInitTotal').value || 0;
-      const lineToken = document.getElementById('setLineToken').value || ""; // 🌟 บันทึก LINE Token
+      
+      // 🌟 ดึงค่าจากช่อง Telegram
+      const telegramBotToken = document.getElementById('setTelegramBotToken').value || ""; 
+      const telegramChatId = document.getElementById('setTelegramChatId').value || ""; 
       
       const targetMonth = document.getElementById('settingMonthPicker').value;
       const initialCycleMeter = document.getElementById('setInitCycle').value || 0;
@@ -586,7 +594,8 @@
       const btn = document.querySelector('.btn-primary');
       btn.innerText = "กำลังบันทึก...";
       
-      let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}&lineToken=${encodeURIComponent(lineToken)}`;
+      // 🌟 อัปเดต URL
+      let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}&telegramBotToken=${encodeURIComponent(telegramBotToken)}&telegramChatId=${encodeURIComponent(telegramChatId)}`;
       
       if (targetMonth) {
          url += `&targetMonth=${encodeURIComponent(targetMonth)}&initialCycleMeter=${initialCycleMeter}`;
@@ -604,7 +613,6 @@
         });
     }
 
-    // 🌟 โหลดระบบ + เพิ่ม Service Worker + แจ้งเตือน 
     window.onload = () => {
       fetchNotifications(); 
       updateDashboard(); 
