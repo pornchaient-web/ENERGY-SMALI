@@ -26,6 +26,7 @@
       </a>
       <a href="#" class="nav-item" onclick="switchPage(event, 'notifications')">
         <i class="fa-solid fa-bell"></i><span class="nav-text">แจ้งเตือน</span>
+        <span id="notifBadge" class="nav-badge" style="display: none;"></span>
       </a>
       <a href="#" class="nav-item" onclick="switchPage(event, 'settings')">
         <i class="fa-solid fa-gear"></i><span class="nav-text">ตั้งค่า</span>
@@ -257,6 +258,10 @@
             <label class="form-label">⏳ ถือว่าออฟไลน์เมื่อข้อมูลขาดหายเกิน (นาที)</label>
             <input type="number" id="setOfflineTimeout" class="input-field" step="1">
           </div>
+          <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
+            <label class="form-label" style="color: #00b900;"><i class="fa-brands fa-line"></i> LINE Notify Token (แจ้งเตือนผ่านไลน์)</label>
+            <input type="text" id="setLineToken" class="input-field" placeholder="ใส่ Token ที่ได้จาก LINE Notify...">
+          </div>
 
           <button class="btn-primary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
           <p id="saveStatus" style="color: var(--accent-green); font-size: 0.9rem; margin-top: 10px; display: none; text-align: center;"></p>
@@ -280,7 +285,21 @@
   </div>
 
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec"; // อย่าลืมแก้ให้เป็น URL ปัจจุบันของคุณ
+    // ⚠️ อย่าลืมแก้ให้เป็น Web App URL ของคุณ
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec"; 
+
+    function triggerDesktopNotification(title, body) {
+      if ('Notification' in window && Notification.permission === 'granted') {
+        navigator.serviceWorker.ready.then(registration => {
+          registration.showNotification(title, {
+            body: body,
+            icon: 'icon-192.png',
+            vibrate: [200, 100, 200],
+            badge: 'icon-192.png'
+          });
+        });
+      }
+    }
 
     function fetchNotifications() {
       const logsEl = document.getElementById('notificationLogs');
@@ -307,11 +326,15 @@
     function clearNotifications() {
       if(confirm("คุณต้องการล้างประวัติการแจ้งเตือนทั้งหมดใช่หรือไม่?")) {
         document.getElementById('notificationLogs').innerHTML = '<p class="text-sm" style="opacity: 0.6; text-align: center;">กำลังล้างข้อมูล...</p>';
-        fetch(`${WEB_APP_URL}?action=clearNotifications`).then(res => res.json()).then(() => fetchNotifications());
+        fetch(`${WEB_APP_URL}?action=clearNotifications`).then(res => res.json()).then(() => {
+            // 🌟 รีเซ็ตค่าความจำ Notification
+            localStorage.setItem('saved_log_count', '0');
+            window.currentServerLogCount = 0;
+            fetchNotifications();
+        });
       }
     }
 
-    // 🌟 แก้ไขฟังก์ชัน switchPage เพื่อรองรับ event ป้องกัน Error event is undefined
     function switchPage(event, pageId) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -320,14 +343,21 @@
       if (event && event.currentTarget) {
           event.currentTarget.classList.add('active');
       } else {
-          // หากไม่มี event ถูกส่งมาให้พยายามค้นหาปุ่มที่มีคำสั่งดังกล่าว
           const link = document.querySelector(`.nav-item[onclick*="${pageId}"]`);
           if (link) link.classList.add('active');
       }
 
       if (pageId === 'history' && !historyChartInstance) { initHistoryChart(); loadGraphData(); } 
       else if (pageId === 'settings') { fetchSettings(); } 
-      else if (pageId === 'notifications') { fetchNotifications(); }
+      else if (pageId === 'notifications') { 
+        fetchNotifications(); 
+        // 🌟 จำค่าเมื่ออ่านแล้ว และซ่อนจุดแดง
+        if (window.currentServerLogCount !== undefined) {
+          localStorage.setItem('saved_log_count', window.currentServerLogCount);
+        }
+        const badge = document.getElementById('notifBadge');
+        if (badge) badge.style.display = 'none';
+      }
     }
 
     Chart.defaults.font.family = "'Chakra Petch', sans-serif";
@@ -464,6 +494,41 @@
           if (currentPowerKw > maxLimitKw) { powerStatusEl.innerText = `⚠️ ใช้งานไฟเกินพิกัด (${powerKw} / ${maxLimitKw} kW)`; powerStatusEl.style.color = "var(--accent-orange)"; } 
           else { powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`; powerStatusEl.style.color = "var(--accent-green)"; }
         }
+
+        // 🌟 จัดการ Web Push Notification และ Badge เมนูการแจ้งเตือน
+        const lastOnlineState = localStorage.getItem('last_online_state');
+        const currentOnlineState = currentOnline ? 'online' : 'offline';
+        if (lastOnlineState && lastOnlineState !== currentOnlineState) {
+          if (currentOnlineState === 'offline') {
+            triggerDesktopNotification("⚠️ มิเตอร์ออฟไลน์", "ระบบขาดการติดต่อกับอุปกรณ์ ESP เกินเวลาที่กำหนด");
+          } else {
+            triggerDesktopNotification("✅ มิเตอร์กลับมาออนไลน์", "อุปกรณ์เชื่อมต่อระบบเรียบร้อยแล้ว");
+          }
+        }
+        localStorage.setItem('last_online_state', currentOnlineState);
+
+        if (data.logCount !== undefined) {
+          window.currentServerLogCount = data.logCount;
+          const savedLogCount = parseInt(localStorage.getItem('saved_log_count') || '0', 10);
+          const badge = document.getElementById('notifBadge');
+          
+          if (data.logCount > savedLogCount) {
+            const isNotifPageActive = document.getElementById('page-notifications').classList.contains('active');
+            if (isNotifPageActive) {
+              localStorage.setItem('saved_log_count', data.logCount);
+              fetchNotifications();
+              if (badge) badge.style.display = 'none';
+            } else {
+              if (badge) badge.style.display = 'inline-block';
+              if (currentPowerKw > maxLimitKw) {
+                triggerDesktopNotification("⚠️ คำเตือน: ใช้ไฟเกินกำหนด!", `กำลังไฟฟ้าปัจจุบัน: ${powerKw} kW (จำกัดไว้ที่ ${maxLimitKw} kW)`);
+              }
+            }
+          } else {
+            if (badge) badge.style.display = 'none';
+          }
+        }
+
       });
     }
 
@@ -476,6 +541,7 @@
         document.getElementById('setMaxPower').value = config.maxPower || 5.0;
         document.getElementById('setOfflineTimeout').value = config.offlineTimeout || 5;
         document.getElementById('setInitTotal').value = config.initialTotalMeter || 0;
+        document.getElementById('setLineToken').value = config.lineToken || ""; // 🌟 โหลดค่า LINE Token
         
         const monthPicker = document.getElementById('settingMonthPicker');
         monthPicker.innerHTML = '';
@@ -512,6 +578,7 @@
       const maxPower = document.getElementById('setMaxPower').value;
       const offlineTimeout = document.getElementById('setOfflineTimeout').value;
       const initialTotalMeter = document.getElementById('setInitTotal').value || 0;
+      const lineToken = document.getElementById('setLineToken').value || ""; // 🌟 บันทึก LINE Token
       
       const targetMonth = document.getElementById('settingMonthPicker').value;
       const initialCycleMeter = document.getElementById('setInitCycle').value || 0;
@@ -519,7 +586,7 @@
       const btn = document.querySelector('.btn-primary');
       btn.innerText = "กำลังบันทึก...";
       
-      let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}`;
+      let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}&lineToken=${encodeURIComponent(lineToken)}`;
       
       if (targetMonth) {
          url += `&targetMonth=${encodeURIComponent(targetMonth)}&initialCycleMeter=${initialCycleMeter}`;
@@ -537,13 +604,16 @@
         });
     }
 
-    // 🌟 โหลดระบบ + เพิ่ม Service Worker 
+    // 🌟 โหลดระบบ + เพิ่ม Service Worker + แจ้งเตือน 
     window.onload = () => {
       fetchNotifications(); 
       updateDashboard(); 
       setInterval(updateDashboard, 10000); 
       
-      // การลงทะเบียน Service Worker สำหรับ PWA
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('Service Worker registered successfully!', reg))
