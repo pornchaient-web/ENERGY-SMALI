@@ -1,11 +1,10 @@
-const CACHE_NAME = 'smartmeter-v3';
+const CACHE_NAME = 'smartmeter-v4'; // 🌟 อัปเดตเวอร์ชัน
 const ASSETS = [
   './',
   './index.html',
   './style.css'
 ];
 
-// ติดตั้ง Service Worker และบันทึกไฟล์ลง Cache
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
@@ -14,7 +13,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// เปิดใช้งานและลบ Cache เวอร์ชันเก่า
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys => {
@@ -29,9 +27,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// จัดการคำขอข้อมูล (โหลดจาก Cache ก่อน ถ้าไม่มีค่อยดึงจากเน็ต)
 self.addEventListener('fetch', event => {
-  // หากเป็นการเรียกไปยัง Google Apps Script (ดึงข้อมูลมิเตอร์) ไม่ต้องผ่าน Cache เพื่อให้ได้ข้อมูลใหม่เสมอ
   if (event.request.url.includes('script.google.com')) {
     return;
   }
@@ -39,6 +35,25 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
       return cachedResponse || fetch(event.request);
+    })
+  );
+});
+
+// 🌟 เมื่อผู้ใช้คลิกที่การแจ้งเตือนหน้าจอ ให้เปิดกลับมาที่แอป/เว็บ
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
+      for (var i = 0; i < windowClients.length; i++) {
+        var client = windowClients[i];
+        if ('focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow('./index.html');
+      }
     })
   );
 });
