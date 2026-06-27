@@ -435,8 +435,8 @@
       historyChartInstance.update();
     }
 
-    function updateDashboard() {
-      fetch(`${WEB_APP_URL}?action=getLatestData`).then(res => res.json()).then(data => {
+    // 🚀 ฟังก์ชันสำหรับนำข้อมูลมาแสดงผลบนหน้าจอ (แยกออกมาเพื่อให้เรียกใช้ซ้ำได้ทันทีจาก Cache)
+    function renderDashboardData(data) {
         if (data.error) { document.getElementById('period').innerText = data.error; return; }
         
         const powerKw = (parseFloat(data.power) / 1000).toFixed(2);
@@ -468,11 +468,17 @@
         const otaBtn = document.getElementById('otaBtn');
         if (data.espIp && data.espIp !== "") { otaBtn.href = "http://" + data.espIp + "/update"; otaBtn.style.display = "inline-block"; }
 
-        powerData.shift(); powerData.push(powerKw); powerBarChart.update();
+        // อัปเดตกราฟแท่ง
+        if(powerData[powerData.length - 1] !== powerKw) { 
+            powerData.shift(); powerData.push(powerKw); powerBarChart.update();
+        }
+        
+        // อัปเดตกราฟวงกลม
         let energyVal = parseFloat(data.todayEnergy) || 0; 
         let maxTarget = energyVal > 15 ? energyVal + 5 : 15;
         todayGauge.data.datasets[0].data = [energyVal, maxTarget - energyVal]; todayGauge.update();
 
+        // สถานะ Online/Offline
         const currentOnline = data.isOnline;
         const mainDeviceStatus = document.getElementById('mainDeviceStatus');
         const statusIconContainer = document.getElementById('statusIconContainer');
@@ -492,6 +498,7 @@
           if (deviceStatusEl) { deviceStatusEl.innerText = "🔴 ขาดการติดต่อ (Offline)"; deviceStatusEl.style.color = "var(--accent-orange)"; }
         }
 
+        // สถานะการใช้ไฟเกิน
         const currentPowerKw = parseFloat(powerKw);
         const maxLimitKw = parseFloat(data.maxPowerLimit) || 5.0;
         const powerStatusEl = document.getElementById('notifPowerStatus');
@@ -511,6 +518,7 @@
         }
         localStorage.setItem('last_online_state', currentOnlineState);
 
+        // จัดการเรื่อง Notification Badge
         if (data.logCount !== undefined) {
           window.currentServerLogCount = data.logCount;
           const savedLogCount = parseInt(localStorage.getItem('saved_log_count') || '0', 10);
@@ -532,8 +540,16 @@
             if (badge) badge.style.display = 'none';
           }
         }
+    }
 
-      });
+    function updateDashboard() {
+      fetch(`${WEB_APP_URL}?action=getLatestData`)
+        .then(res => res.json())
+        .then(data => {
+            // 🚀 บันทึกข้อมูลล่าสุดลง LocalStorage เพื่อให้ครั้งหน้าเปิดแอปมาเจอเลย
+            localStorage.setItem('cached_dashboard', JSON.stringify(data));
+            renderDashboardData(data);
+        }).catch(err => console.log("รอรอบอัปเดตถัดไป..."));
     }
 
     function fetchSettings() {
@@ -545,7 +561,6 @@
         document.getElementById('setMaxPower').value = config.maxPower || 5.0;
         document.getElementById('setOfflineTimeout').value = config.offlineTimeout || 5;
         document.getElementById('setInitTotal').value = config.initialTotalMeter || 0;
-        // 🌟 โหลดค่า Telegram
         document.getElementById('setTelegramBotToken').value = config.telegramBotToken || ""; 
         document.getElementById('setTelegramChatId').value = config.telegramChatId || ""; 
         
@@ -584,7 +599,6 @@
       const maxPower = document.getElementById('setMaxPower').value;
       const offlineTimeout = document.getElementById('setOfflineTimeout').value;
       const initialTotalMeter = document.getElementById('setInitTotal').value || 0;
-      // 🌟 ดึงค่า Telegram เพื่อส่งไปบันทึก
       const telegramBotToken = document.getElementById('setTelegramBotToken').value || ""; 
       const telegramChatId = document.getElementById('setTelegramChatId').value || ""; 
       
@@ -594,7 +608,6 @@
       const btn = document.querySelector('.btn-primary');
       btn.innerText = "กำลังบันทึก...";
       
-      // 🌟 แนบค่าไปกับ URL 
       let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}&telegramBotToken=${encodeURIComponent(telegramBotToken)}&telegramChatId=${encodeURIComponent(telegramChatId)}`;
       
       if (targetMonth) {
@@ -614,9 +627,19 @@
     }
 
     window.onload = () => {
+      // 🚀 ทริกสำคัญ: ดึงข้อมูลเก่าที่เคยเซฟไว้ขึ้นมาโชว์ "ทันที" แบบไม่มีดีเลย์
+      const cachedData = localStorage.getItem('cached_dashboard');
+      if (cachedData) {
+          try {
+              renderDashboardData(JSON.parse(cachedData));
+          } catch(e) {}
+      }
+
       fetchNotifications(); 
       updateDashboard(); 
-      setInterval(updateDashboard, 10000); 
+      
+      // 🚀 ดึงข้อมูลเบื้องหลังทุก 30 วินาที เพื่อลดภาระเซิร์ฟเวอร์
+      setInterval(updateDashboard, 30000); 
       
       if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
