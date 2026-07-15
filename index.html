@@ -234,6 +234,12 @@
           </div>
 
           <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
+            <label class="form-label" style="color: var(--accent-yellow);"><i class="fa-solid fa-wrench"></i> ตัวคูณปรับเทียบความแม่นยำ (Energy Multiplier)</label>
+            <input type="number" id="setMultiplier" class="input-field" step="0.001" placeholder="เช่น 1.000">
+            <p class="text-sm" style="opacity: 0.6; margin-top: 5px;">* ตั้งค่า 1.000 คือปกติ หากค่าเพี้ยนให้ขยับ เช่น 1.050 (เพิ่ม 5%) หรือ 0.980 (ลด 2%)</p>
+          </div>
+
+          <div class="form-group" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; margin-top: 15px;">
             <label class="form-label" style="color: var(--accent-blue);">🔄 เลขมิเตอร์สะสมรวม (บวกตัวเลขทั้งหมด)</label>
             <input type="number" id="setInitTotal" class="input-field" step="0.1" placeholder="ตัวอย่าง: 15000">
           </div>
@@ -290,7 +296,7 @@
   </div>
 
   <script>
-    // ⚠️ อย่าลืมแก้ให้เป็น Web App URL ของคุณ
+    // ⚠️ อย่าลืมแก้ให้เป็น Web App URL ของคุณ (URL ลงท้ายด้วย /exec จาก Google Apps Script ล่าสุด)
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxlNSElIjx9J3PDmg015dyYcwrZ5X9O3EV09ikVmtlJ3srpo4hgVZZnoNdFD6kcyAnslA/exec"; 
 
     function triggerDesktopNotification(title, body) {
@@ -435,7 +441,7 @@
       historyChartInstance.update();
     }
 
-    // 🚀 ฟังก์ชันสำหรับนำข้อมูลมาแสดงผลบนหน้าจอ (แยกออกมาเพื่อให้เรียกใช้ซ้ำได้ทันทีจาก Cache)
+    // 🚀 ฟังก์ชันสำหรับนำข้อมูลมาแสดงผลบนหน้าจอ
     function renderDashboardData(data) {
         if (data.error) { document.getElementById('period').innerText = data.error; return; }
         
@@ -546,7 +552,7 @@
       fetch(`${WEB_APP_URL}?action=getLatestData`)
         .then(res => res.json())
         .then(data => {
-            // 🚀 บันทึกข้อมูลล่าสุดลง LocalStorage เพื่อให้ครั้งหน้าเปิดแอปมาเจอเลย
+            // บันทึกข้อมูลล่าสุดลง LocalStorage เพื่อให้ครั้งหน้าเปิดแอปมาเจอเลย
             localStorage.setItem('cached_dashboard', JSON.stringify(data));
             renderDashboardData(data);
         }).catch(err => console.log("รอรอบอัปเดตถัดไป..."));
@@ -563,6 +569,9 @@
         document.getElementById('setInitTotal').value = config.initialTotalMeter || 0;
         document.getElementById('setTelegramBotToken').value = config.telegramBotToken || ""; 
         document.getElementById('setTelegramChatId').value = config.telegramChatId || ""; 
+        
+        // 🌟 ดึงค่า Energy Multiplier มาแสดง
+        document.getElementById('setMultiplier').value = config.energyMultiplier || 1.000;
         
         const monthPicker = document.getElementById('settingMonthPicker');
         monthPicker.innerHTML = '';
@@ -602,13 +611,17 @@
       const telegramBotToken = document.getElementById('setTelegramBotToken').value || ""; 
       const telegramChatId = document.getElementById('setTelegramChatId').value || ""; 
       
+      // 🌟 รับค่า Energy Multiplier จากหน้าเว็บ
+      const energyMultiplier = document.getElementById('setMultiplier').value || 1.000;
+      
       const targetMonth = document.getElementById('settingMonthPicker').value;
       const initialCycleMeter = document.getElementById('setInitCycle').value || 0;
       
       const btn = document.querySelector('.btn-primary');
       btn.innerText = "กำลังบันทึก...";
       
-      let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}&telegramBotToken=${encodeURIComponent(telegramBotToken)}&telegramChatId=${encodeURIComponent(telegramChatId)}`;
+      // 🌟 ส่งค่า Energy Multiplier กลับไปให้ Google Apps Script
+      let url = `${WEB_APP_URL}?action=saveSettings&billDay=${billDay}&ftRate=${ftRate}&serviceCharge=${serviceCharge}&vatRate=${vatRate}&maxPower=${maxPower}&offlineTimeout=${offlineTimeout}&initialTotalMeter=${initialTotalMeter}&telegramBotToken=${encodeURIComponent(telegramBotToken)}&telegramChatId=${encodeURIComponent(telegramChatId)}&energyMultiplier=${energyMultiplier}`;
       
       if (targetMonth) {
          url += `&targetMonth=${encodeURIComponent(targetMonth)}&initialCycleMeter=${initialCycleMeter}`;
@@ -627,7 +640,7 @@
     }
 
     window.onload = () => {
-      // 🚀 ทริกสำคัญ: ดึงข้อมูลเก่าที่เคยเซฟไว้ขึ้นมาโชว์ "ทันที" แบบไม่มีดีเลย์
+      // ดึงข้อมูลเก่าที่เคยเซฟไว้ขึ้นมาโชว์ทันที
       const cachedData = localStorage.getItem('cached_dashboard');
       if (cachedData) {
           try {
@@ -638,7 +651,7 @@
       fetchNotifications(); 
       updateDashboard(); 
       
-      // 🚀 ดึงข้อมูลเบื้องหลังทุก 30 วินาที เพื่อลดภาระเซิร์ฟเวอร์
+      // 🚀 ดึงข้อมูลเบื้องหลังทุก 30 วินาที เพื่อให้ตรงกับบอร์ดที่ส่งมาทุก 30 วิ
       setInterval(updateDashboard, 30000); 
       
       if ('Notification' in window && Notification.permission === 'default') {
