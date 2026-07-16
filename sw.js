@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smartmeter-v7'; // 🌟 อัปเดตเวอร์ชัน
+const CACHE_NAME = 'smartmeter-v8'; // 🌟 อัปเดตเวอร์ชัน
 const ASSETS = [
   './',
   './index.html',

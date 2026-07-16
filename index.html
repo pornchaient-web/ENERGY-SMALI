@@ -31,6 +31,10 @@
       <a href="#" class="nav-item" onclick="switchPage(event, 'settings')">
         <i class="fa-solid fa-gear"></i><span class="nav-text">ตั้งค่า</span>
       </a>
+      <!-- 🌟 ปุ่มสลับโหมดมืด-สว่าง -->
+      <a href="#" class="nav-item" id="themeToggleBtn" onclick="toggleTheme(event)">
+        <i class="fa-solid fa-moon" id="themeIcon"></i><span class="nav-text" id="themeText">โหมดมืด</span>
+      </a>
     </div>
   </nav>
 
@@ -119,7 +123,10 @@
         <div class="card">
           <div class="card-header"><h3 class="card-title">Current Power</h3></div>
           <div class="stat-row">
-            <div class="stat-box"><div class="value" id="power">0.00</div><div class="unit">kW (ปัจจุบัน)</div></div>
+            <div class="stat-box">
+              <div class="value" id="power" style="transition: color 0.3s ease;">0.00</div>
+              <div class="unit">kW (ปัจจุบัน)</div>
+            </div>
           </div>
           <div class="chart-container"><canvas id="powerBarChart"></canvas></div>
         </div>
@@ -371,6 +378,105 @@
       }
     }
 
+    // 🌟 ระบบสลับโหมดมืด / โหมดสว่าง อัจฉริยะ (Theme Toggle Logic)
+    function toggleTheme(event) {
+      if (event) event.preventDefault();
+      const isLight = document.body.classList.toggle('light-mode');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+      updateThemeUI(isLight);
+    }
+
+    function updateThemeUI(isLight) {
+      const themeIcon = document.getElementById('themeIcon');
+      const themeText = document.getElementById('themeText');
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      
+      if (isLight) {
+        if (metaThemeColor) metaThemeColor.setAttribute('content', '#f8fafc');
+        themeIcon.className = "fa-solid fa-sun";
+        themeText.innerText = "โหมดสว่าง";
+        updateChartsTheme(true);
+      } else {
+        if (metaThemeColor) metaThemeColor.setAttribute('content', '#060913');
+        themeIcon.className = "fa-solid fa-moon";
+        themeText.innerText = "โหมดมืด";
+        updateChartsTheme(false);
+      }
+    }
+
+    function updateChartsTheme(isLight) {
+      const textColor = isLight ? '#475569' : '#94a3b8';
+      const gridColor = isLight ? 'rgba(15, 23, 42, 0.05)' : 'rgba(255, 255, 255, 0.06)';
+      
+      Chart.defaults.color = textColor;
+      Chart.defaults.borderColor = gridColor;
+
+      // อัปเดต Power Chart
+      if (powerBarChart) {
+        const ctxBar = document.getElementById('powerBarChart').getContext('2d');
+        let gradBar = ctxBar.createLinearGradient(0, 0, 0, 80);
+        if (isLight) {
+          gradBar.addColorStop(0, '#0284c7');
+          gradBar.addColorStop(1, 'rgba(2, 132, 199, 0.05)');
+        } else {
+          gradBar.addColorStop(0, '#10b981');
+          gradBar.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+        }
+        powerBarChart.data.datasets[0].backgroundColor = gradBar;
+        powerBarChart.options.scales.x.grid.color = gridColor;
+        powerBarChart.options.scales.y.grid.color = gridColor;
+        powerBarChart.update();
+      }
+
+      // อัปเดต Today Gauge
+      if (todayGauge) {
+        todayGauge.data.datasets[0].backgroundColor = isLight 
+          ? ['#0284c7', 'rgba(15, 23, 42, 0.06)'] 
+          : ['#10b981', 'rgba(255, 255, 255, 0.06)'];
+        todayGauge.update();
+      }
+
+      // อัปเดตประวัติกราฟเชิงลึก (ถ้าถูกโหลดขึ้นมาแล้ว)
+      if (historyChartInstance) {
+        historyChartInstance.options.scales.x.grid.color = gridColor;
+        historyChartInstance.options.scales.y.grid.color = gridColor;
+        historyChartInstance.options.plugins.legend.labels.color = textColor;
+        
+        const type = document.getElementById('chartDataType').value;
+        const ctx = document.getElementById('historyChartCanvas').getContext('2d');
+        
+        if (historyChartInstance.data.datasets.length > 0) {
+          if (type === 'power') {
+            let grad = ctx.createLinearGradient(0, 0, 0, 300);
+            if (isLight) {
+              grad.addColorStop(0, 'rgba(2, 132, 199, 0.35)');
+              grad.addColorStop(1, 'rgba(2, 132, 199, 0.01)');
+              historyChartInstance.data.datasets[0].borderColor = '#0284c7';
+            } else {
+              grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+              grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+              historyChartInstance.data.datasets[0].borderColor = '#10b981';
+            }
+            historyChartInstance.data.datasets[0].backgroundColor = grad;
+          } else if (type === 'energy') {
+            let gradE = ctx.createLinearGradient(0, 0, 0, 300);
+            if (isLight) {
+              gradE.addColorStop(0, 'rgba(14, 165, 233, 0.8)');
+              gradE.addColorStop(1, 'rgba(14, 165, 233, 0.15)');
+            } else {
+              gradE.addColorStop(0, 'rgba(56, 189, 248, 0.8)');
+              gradE.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
+            }
+            historyChartInstance.data.datasets[0].backgroundColor = gradE;
+          } else if (type === 'system') {
+            historyChartInstance.data.datasets[0].borderColor = isLight ? '#0284c7' : '#38bdf8';
+            historyChartInstance.data.datasets[1].borderColor = isLight ? '#d97706' : '#ffc107';
+          }
+        }
+        historyChartInstance.update();
+      }
+    }
+
     Chart.defaults.font.family = "'Chakra Petch', sans-serif";
     Chart.defaults.color = '#94a3b8'; Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.06)';
     const ctxBar = document.getElementById('powerBarChart').getContext('2d');
@@ -425,18 +531,34 @@
       historyChartInstance.data.labels = data.times || [];
       historyChartInstance.data.datasets = [];
       const ctx = document.getElementById('historyChartCanvas').getContext('2d');
+      const isLight = document.body.classList.contains('light-mode');
+
       if (type === 'power') {
         historyChartInstance.config.type = 'line';
-        let grad = ctx.createLinearGradient(0, 0, 0, 300); grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)'); grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
-        historyChartInstance.data.datasets.push({ label: 'Power (kW)', data: (data.powers||[]).map(p=>p/1000), borderColor: '#10b981', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
+        let grad = ctx.createLinearGradient(0, 0, 0, 300);
+        if (isLight) {
+          grad.addColorStop(0, 'rgba(2, 132, 199, 0.35)');
+          grad.addColorStop(1, 'rgba(2, 132, 199, 0.01)');
+        } else {
+          grad.addColorStop(0, 'rgba(16, 185, 129, 0.35)');
+          grad.addColorStop(1, 'rgba(16, 185, 129, 0.01)');
+        }
+        historyChartInstance.data.datasets.push({ label: 'Power (kW)', data: (data.powers||[]).map(p=>p/1000), borderColor: isLight ? '#0284c7' : '#10b981', backgroundColor: grad, fill: true, tension: 0.3, pointRadius: 2 });
       } else if (type === 'energy') {
         historyChartInstance.config.type = 'bar';
-        let gradE = ctx.createLinearGradient(0, 0, 0, 300); gradE.addColorStop(0, 'rgba(56, 189, 248, 0.8)'); gradE.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
+        let gradE = ctx.createLinearGradient(0, 0, 0, 300);
+        if (isLight) {
+          gradE.addColorStop(0, 'rgba(14, 165, 233, 0.8)');
+          gradE.addColorStop(1, 'rgba(14, 165, 233, 0.15)');
+        } else {
+          gradE.addColorStop(0, 'rgba(56, 189, 248, 0.8)');
+          gradE.addColorStop(1, 'rgba(56, 189, 248, 0.15)');
+        }
         historyChartInstance.data.datasets.push({ label: 'Energy (kWh)', data: data.energies||[], backgroundColor: gradE, borderRadius: 4 });
       } else if (type === 'system') {
         historyChartInstance.config.type = 'line';
-        historyChartInstance.data.datasets.push({ label: 'Voltage (V)', data: data.voltages||[], borderColor: '#38bdf8', yAxisID: 'y', tension: 0.3 });
-        historyChartInstance.data.datasets.push({ label: 'Current (A)', data: data.currents||[], borderColor: '#ffc107', yAxisID: 'y1', tension: 0.3 });
+        historyChartInstance.data.datasets.push({ label: 'Voltage (V)', data: data.voltages||[], borderColor: isLight ? '#0284c7' : '#38bdf8', yAxisID: 'y', tension: 0.3 });
+        historyChartInstance.data.datasets.push({ label: 'Current (A)', data: data.currents||[], borderColor: isLight ? '#d97706' : '#ffc107', yAxisID: 'y1', tension: 0.3 });
       }
       historyChartInstance.update();
     }
@@ -504,13 +626,43 @@
           if (deviceStatusEl) { deviceStatusEl.innerText = "🔴 ขาดการติดต่อ (Offline)"; deviceStatusEl.style.color = "var(--accent-orange)"; }
         }
 
-        // สถานะการใช้ไฟเกิน
+        // ==========================================
+        // 🌟 เปลี่ยนสีตัวเลข Current Power kW ตามปริมาณการใช้ไฟ 
+        // ==========================================
         const currentPowerKw = parseFloat(powerKw);
         const maxLimitKw = parseFloat(data.maxPowerLimit) || 5.0;
         const powerStatusEl = document.getElementById('notifPowerStatus');
-        if (powerStatusEl) {
-          if (currentPowerKw > maxLimitKw) { powerStatusEl.innerText = `⚠️ ใช้งานไฟเกินพิกัด (${powerKw} / ${maxLimitKw} kW)`; powerStatusEl.style.color = "var(--accent-orange)"; } 
-          else { powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`; powerStatusEl.style.color = "var(--accent-green)"; }
+        const powerDisplayEl = document.getElementById('power'); 
+        
+        // ลบเอฟเฟกต์กระพริบออกก่อนการตรวจสอบ
+        if(powerDisplayEl) powerDisplayEl.classList.remove('text-blink-red');
+
+        if (currentPowerKw >= maxLimitKw) { 
+            // 🔴 ไฟเกินขีดจำกัดที่ตั้งไว้ (เปลี่ยนเป็นสีแดง และกระพริบ)
+            if(powerDisplayEl) {
+                powerDisplayEl.style.color = "var(--accent-red)";
+                powerDisplayEl.classList.add('text-blink-red');
+            }
+            if (powerStatusEl) { 
+                powerStatusEl.innerText = `⚠️ ใช้งานไฟเกินพิกัด (${powerKw} / ${maxLimitKw} kW)`; 
+                powerStatusEl.style.color = "var(--accent-red)"; 
+            } 
+        } 
+        else if (currentPowerKw >= maxLimitKw * 0.8) {
+            // 🟠 ไฟเริ่มเยอะ (ตั้งแต่ 80% ของขีดจำกัดขึ้นไป เปลี่ยนเป็นสีส้ม)
+            if(powerDisplayEl) powerDisplayEl.style.color = "var(--accent-orange)";
+            if (powerStatusEl) { 
+                powerStatusEl.innerText = `⚠️ โหลดเริ่มสูง (${powerKw} / ${maxLimitKw} kW)`; 
+                powerStatusEl.style.color = "var(--accent-orange)"; 
+            } 
+        } 
+        else { 
+            // 🟢 ปกติ (น้อยกว่า 80% เป็นสีเขียว)
+            if(powerDisplayEl) powerDisplayEl.style.color = "var(--accent-green)";
+            if (powerStatusEl) { 
+                powerStatusEl.innerText = `✅ ปกติ (${powerKw} kW)`; 
+                powerStatusEl.style.color = "var(--accent-green)"; 
+            } 
         }
 
         const lastOnlineState = localStorage.getItem('last_online_state');
@@ -640,6 +792,14 @@
     }
 
     window.onload = () => {
+      // 🌟 ดึงค่าธีมเก่าขึ้นมาตั้งค่าทันทีก่อนการโหลดข้อมูล
+      const savedTheme = localStorage.getItem('theme');
+      const isLight = savedTheme === 'light';
+      if (isLight) {
+        document.body.classList.add('light-mode');
+      }
+      updateThemeUI(isLight);
+
       // ดึงข้อมูลเก่าที่เคยเซฟไว้ขึ้นมาโชว์ทันที
       const cachedData = localStorage.getItem('cached_dashboard');
       if (cachedData) {
